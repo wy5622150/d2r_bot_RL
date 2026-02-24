@@ -1,0 +1,27 @@
+# Data (too large for git, manually copy or use cloud storage)
+data/
+models/
+
+# Calibration screenshots
+calibrate_*.png
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
