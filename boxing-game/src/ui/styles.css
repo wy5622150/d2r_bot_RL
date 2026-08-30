@@ -1,0 +1,511 @@
+:root {
+  --bg: #0b0d12;
+  --panel: #161a23;
+  --panel-2: #1e2430;
+  --line: #2c3444;
+  --text: #e6e9ef;
+  --muted: #98a2b3;
+  --accent: #4fc3f7;
+  --hp: #ef5350;
+  --energy: #ffd166;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+}
+
+.app {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 20px 48px;
+}
+
+.app__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+
+.app__head h1 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- 通用控件 */
+
+.btn {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06212c;
+  font-weight: 700;
+}
+
+.btn--ghost {
+  background: transparent;
+}
+
+.btn--chip {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.btn--chip.is-on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06212c;
+  font-weight: 700;
+}
+
+.btn--wide {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+/* ---------------------------------------------------------------- 选择对手 */
+
+.screen__title {
+  font-size: 16px;
+  margin: 24px 0 12px;
+}
+
+.screen__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.screen__bar h2 {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.screen__hint {
+  margin: 4px 0;
+  line-height: 1.6;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.panel h2 {
+  font-size: 15px;
+  margin: 0 0 10px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.card p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+  min-height: 3.2em;
+}
+
+.statline {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin: 0;
+}
+
+.statline div {
+  background: var(--panel-2);
+  border-radius: 6px;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+.statline dt {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.statline dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- 配槽 */
+
+.loadout {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.loadout__slots {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  gap: 16px;
+}
+
+.loadout section h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.loadout section h3 small {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.slotrow {
+  display: flex;
+  gap: 8px;
+}
+
+.slot {
+  flex: 1;
+  font: inherit;
+  color: inherit;
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 12px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.slot.is-selected {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--panel-2);
+}
+
+.slot__name {
+  font-weight: 700;
+}
+
+.slot__name--empty {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.slot__cost {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.palette__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.palette__head > div {
+  display: flex;
+  gap: 8px;
+}
+
+.palette__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.palette__item {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+}
+
+.palette__item:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.palette__item:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.palette__item--attack {
+  border-left-color: #ef5350;
+}
+
+.palette__item--defense {
+  border-left-color: #4fc3f7;
+}
+
+.palette__item--rest {
+  border-left-color: #ffd166;
+}
+
+.palette__name {
+  font-weight: 700;
+}
+
+.palette__stats {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- 战斗 */
+
+.fight {
+  display: grid;
+  gap: 12px;
+}
+
+.fight__hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px 18px;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.fight__round {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.fight__speed {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.statbar__head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.statbar--right .statbar__head {
+  flex-direction: row-reverse;
+}
+
+.statbar__num {
+  color: var(--muted);
+}
+
+.statbar__track {
+  height: 10px;
+  background: var(--panel-2);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+}
+
+.statbar--right .statbar__track {
+  justify-content: flex-end;
+}
+
+.statbar__fill {
+  height: 100%;
+  transition: width 0.18s ease-out;
+}
+
+.statbar__fill--hp {
+  background: var(--hp);
+}
+
+.statbar__fill--energy {
+  background: var(--energy);
+}
+
+.fight__stage {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0f1218;
+}
+
+.arena canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.fight__log {
+  height: 132px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.fight__log p {
+  margin: 0;
+}
+
+.fight__log p:last-child {
+  color: var(--text);
+}
+
+/* ---------------------------------------------------------------- 浮层 */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 14, 0.86);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.overlay__panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 24px;
+  width: min(100%, 940px);
+}
+
+.overlay__panel h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.overlay__panel--result {
+  width: min(100%, 460px);
+  text-align: center;
+}
+
+.overlay__panel--result h2 {
+  font-size: 30px;
+}
+
+.overlay__panel--result h2.win {
+  color: #66bb6a;
+}
+
+.overlay__panel--result h2.lose {
+  color: var(--hp);
+}
+
+.result__score {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.result__score div {
+  background: var(--panel-2);
+  border-radius: 10px;
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+}
+
+.result__score strong {
+  font-size: 22px;
+}
+
+.overlay__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.loadout--compact .palette__grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+@media (max-width: 860px) {
+  .loadout__slots,
+  .fight__hud {
+    grid-template-columns: 1fr;
+  }
+}
