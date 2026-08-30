@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { applyLoadout, createFight } from '../core/engine';
 import { cloneLoadout, getOpponent, OPPONENTS, PLAYER } from '../core/fighters';
 import { advanceRound } from '../core/match';
-import { DEFENSE_SLOTS, OFFENSE_SLOTS } from '../core/stats';
-import type { FightState, Loadout, RoundEvent, Side, Slot } from '../core/types';
+import { ABILITY_SLOTS_MAX } from '../core/stats';
+import type { FightState, Loadout, RoundEvent, Side } from '../core/types';
 import { EventBus } from '../game/EventBus';
 
 export type Screen = 'select' | 'loadout' | 'fight' | 'result';
@@ -27,7 +27,7 @@ interface UiState {
 
   chooseOpponent: (id: string) => void;
   backToSelect: () => void;
-  setSlot: (kind: 'offense' | 'defense', index: number, move: Slot) => void;
+  setSlot: (index: number, move: string) => void;
   resetLoadout: () => void;
   startFight: () => void;
   playNextRound: () => void;
@@ -62,14 +62,12 @@ export const useGame = create<UiState>((set, get) => ({
   chooseOpponent: (id) => set({ opponentId: id, screen: 'loadout' }),
   backToSelect: () => set({ screen: 'select', fight: null, log: [], phase: 'ready' }),
 
-  setSlot: (kind, index, move) =>
+  setSlot: (index, move) =>
     set((s) => {
       const next = cloneLoadout(s.loadout);
-      const slots = kind === 'offense' ? next.offense : next.defense;
-      const len = kind === 'offense' ? OFFENSE_SLOTS : DEFENSE_SLOTS;
-      while (slots.length < len) slots.push(null);
-      slots[index] = move;
-      return { loadout: next };
+      while (next.length < ABILITY_SLOTS_MAX) next.push(move);
+      next[index] = move;
+      return { loadout: next.slice(0, ABILITY_SLOTS_MAX) };
     }),
 
   resetLoadout: () => set({ loadout: cloneLoadout(PLAYER.loadout) }),

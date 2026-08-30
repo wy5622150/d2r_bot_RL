@@ -196,18 +196,12 @@ body {
   font-weight: 700;
 }
 
-/* ---------------------------------------------------------------- 配槽 */
+/* ---------------------------------------------------------------- 技能配置 */
 
 .loadout {
   display: grid;
   gap: 16px;
   margin-top: 16px;
-}
-
-.loadout__slots {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr;
-  gap: 16px;
 }
 
 .loadout section h3 {
@@ -228,6 +222,7 @@ body {
 }
 
 .slot {
+  position: relative;
   flex: 1;
   font: inherit;
   color: inherit;
@@ -257,9 +252,62 @@ body {
   font-weight: 400;
 }
 
-.slot__cost {
+.slot__idx {
+  position: absolute;
+  top: 4px;
+  left: 7px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.slot__kind {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+}
+
+.slot__kind--attack {
+  color: #ef8f8d;
+}
+
+.slot__kind--defense {
+  color: #8fd3ff;
+}
+
+.warn {
+  color: #ffb26b;
+  margin: 8px 0 0;
+}
+
+.provenance {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+}
+
+.provenance a {
+  color: var(--accent);
+}
+
+.movecard__raw,
+.palette__name em {
   font-size: 11px;
   color: var(--muted);
+  font-style: normal;
+}
+
+.palette__name em {
+  margin-left: 6px;
+}
+
+.palette__flag {
+  margin-left: 5px;
+  color: #ffb26b;
 }
 
 .palette__head {

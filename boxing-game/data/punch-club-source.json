@@ -1,0 +1,2912 @@
+{
+  "game": "Punch Club 1 (The Dark Fist)",
+  "capturedAt": "2026-08-30",
+  "sources": [
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "note": "Punch Club 1 Skills table; formulas, node-count statements, active attacks/defenses/modifiers."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics",
+      "note": "Punch Club 1 Game Mechanics; ACC/REG/ARM/HP, damage/accuracy/energy-cost model, zero-energy penalty."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Fighting",
+      "note": "Punch Club 1 fight UI/round timer and alternation description."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)",
+      "note": "Punch Club 1 guide; maximum 5 shared ability slots and slot unlock count."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)",
+      "note": "Punch Club 1 perks/passives and some numeric effects."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)",
+      "note": "Punch Club 1 tree identities/layout reference."
+    },
+    {
+      "url": "https://punch-club.fandom.com/wiki/Skills_and_Abilities",
+      "note": "Legacy Fandom Skills and Abilities; largely same migrated source as wiki.gg, used for searchable table recovery."
+    },
+    {
+      "url": "https://punch-club.fandom.com/wiki/Game_Mechanics",
+      "note": "Legacy Game Mechanics; same lineage as wiki.gg, used for cross-check."
+    },
+    {
+      "url": "https://punch-club.fandom.com/wiki/Perks_and_Traits",
+      "note": "Legacy perks/traits."
+    },
+    {
+      "url": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "note": "2016 bilingual skill-name/effect transcription; Chinese labels are treated as third-party/unverified official localization."
+    },
+    {
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=598795240",
+      "note": "Steam community guide id=598795240; max Energy=100 claim and mechanics commentary; author explicitly says parts are guesswork."
+    },
+    {
+      "url": "https://steamcommunity.com/app/394310/discussions/1/458606248615063300/",
+      "note": "2016 Steam discussion with Lazy Bear Games developer reply that ability order has no meaning; also notes no empty equipped-slot start."
+    },
+    {
+      "url": "https://steamcommunity.com/app/394310/discussions/1/1696045708650199856/",
+      "note": "Community dodge/block analysis; kept as lower-confidence notes, not promoted to verified formula."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Punch_Club",
+      "note": "Secondary source for random move selection and 20-round decision condition."
+    },
+    {
+      "url": "https://punch-club.fandom.com/ru/wiki/%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%91%D0%BE%D0%B1%D0%B0",
+      "note": "Opponent page for Big Bobo stats/skills."
+    },
+    {
+      "url": "https://punch-club.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%80",
+      "note": "Opponent page for Silver first-spar stats."
+    },
+    {
+      "url": "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646",
+      "note": "Observed opponent loadouts from a Punch Club Let’s Play; low-authority observational source."
+    },
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Game_Mechanics_(Punch_Club_2)",
+      "note": "EXCLUDED: Punch Club 2 mechanics, used only to quarantine initiative/split-slot concepts."
+    }
+  ],
+  "scopeCorrection": {
+    "userClaim": "27 skills total across Basic / Bear / Tiger / Turtle",
+    "sourceFinding": "Punch Club 1 Skills page says Basic has 24 unlockable nodes; Bear, Tiger and Turtle each have 27. The 2016 transcription yields 105 unlockable tree nodes total. Four core starting combat abilities (Punch/Kick/Block/Dodge) are added separately, so this file contains 109 skill/ability records.",
+    "forcedTo27": false
+  },
+  "formulas": {
+    "maxHp": "baseHP = 38 + 6*STR+ 3*AGI + 8*STM + 16*minimum(STR, AGI, STM); HP = (baseHP / 2) + ((baseHP * Health) / 2)",
+    "maxEnergy": "100",
+    "initiative": null,
+    "damageFromStr": "Damage = base value + modifier * STR; source examples show normal rounding (4.5→5, 3.1→3).",
+    "accuracyBase": "ACC = 3*AGI / (STR + AGI + STM)",
+    "energyRegen": "REG = 5 + STM*1.5",
+    "armorFromSta": "ARM = STM*1.3",
+    "critical": null,
+    "dodge": null,
+    "roundStructure": "Fight can run up to 20 rounds. Within a round, a fight timer runs to zero while fighters alternate attack/defense phases; exact timer duration / fixed action count was not found.",
+    "offenseSlotOrder": "Ability slot order has no meaning (developer reply). Moves are auto-selected; secondary sources describe random draws from selected skills. No deterministic slot cursor was found for Punch Club 1.",
+    "cursorPersistsAcrossRounds": null,
+    "defenseSelection": "Punch Club 1 sources describe one shared combat ability-slot set, not separate offense/defense slot arrays. Exact choice algorithm among multiple defenses was not found in official/wiki text. A community analysis reports automatic defense-failure probabilities (e.g. 1 defense skill ≈25% automatic failure), but this is not promoted to a verified engine formula. The game does not allow starting a fight with fewer equipped abilities than unlocked slots.",
+    "zeroEnergyPenalty": "When energy is depleted, an opponent attack does 10 extra damage and knocks the fighter down. Exact knockdown duration and energy restored on ordinary get-up were not found. Diehard is a separate perk: chance to regain 30% energy after knockdown.",
+    "decisionRule": "If neither fighter reaches 0 HP before 20 rounds, a game decision determines the winner; exact score/HP comparison formula was not found.",
+    "offenseSlots": null,
+    "defenseSlots": null,
+    "abilitySlotsMax": 5,
+    "notes": "Punch Club 1 has shared combat ability slots (max 5), not the Punch Club 2 split offense/defense-slot + initiative-cost model. Initiative-cost fields are null throughout. maxEnergy=100 is from a Steam community guide whose author labels parts of the guide guesswork; treat as community evidence. REG is the character combat-stat-page value; wiki explicitly says in-fight pop-up regeneration uses a smaller/unknown algorithm. ARM straight-deduction behavior is tentative on the wiki. Dodge formula explicitly unknown."
+  },
+  "formulaSources": {
+    "maxHp": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics",
+      "https://punch-club.fandom.com/wiki/Game_Mechanics"
+    ],
+    "maxEnergy": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=598795240"
+    ],
+    "initiative": [],
+    "damageFromStr": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+    ],
+    "accuracyBase": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+    ],
+    "energyRegen": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+    ],
+    "armorFromSta": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+    ],
+    "critical": [],
+    "dodge": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+    ],
+    "roundStructure": [
+      "https://punchclub.wiki.gg/wiki/Fighting",
+      "https://en.wikipedia.org/wiki/Punch_Club"
+    ],
+    "offenseSlotOrder": [
+      "https://steamcommunity.com/app/394310/discussions/1/458606248615063300/",
+      "https://en.wikipedia.org/wiki/Punch_Club"
+    ],
+    "cursorPersistsAcrossRounds": [],
+    "defenseSelection": [
+      "https://steamcommunity.com/app/394310/discussions/1/458606248615063300/",
+      "https://steamcommunity.com/app/394310/discussions/1/1696045708650199856/"
+    ],
+    "zeroEnergyPenalty": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=598795240"
+    ],
+    "decisionRule": [
+      "https://en.wikipedia.org/wiki/Punch_Club"
+    ],
+    "abilitySlotsMax": [
+      "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)"
+    ]
+  },
+  "skills": [
+    {
+      "id": "punch",
+      "nameEn": "Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "正拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "1+0.7(str)",
+      "energyCost": "0+1(str)",
+      "accuracy": "70+20(Hit%)",
+      "initiativeCost": null,
+      "effects": [],
+      "unlock": "Starting/basic ability; exact starting loadout is random.",
+      "sourceUrl": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "wiki table. Req: none. Damage/energy values scale with STR; accuracy uses Hit% multiplier. 第三方中文资料译名：正拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "kick",
+      "nameEn": "Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "踢",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "3+0.3(str)",
+      "energyCost": "0+1(str)",
+      "accuracy": "30+30(Hit%)",
+      "initiativeCost": null,
+      "effects": [],
+      "unlock": "Starting/basic ability; exact starting loadout is random.",
+      "sourceUrl": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "wiki table. Req: none. 第三方中文资料译名：踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "block",
+      "nameEn": "Block",
+      "nameZh": null,
+      "nameZhUnofficial": "格挡",
+      "school": "Basic",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": "0.5+0.3(str)",
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Successful block reduces incoming damage; exact block-success and reduction formulas were not found."
+      ],
+      "unlock": "Starting/basic ability; exact starting loadout is random.",
+      "sourceUrl": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "wiki table gives energy-cost formula only. 第三方中文资料译名：格挡；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "dodge",
+      "nameEn": "Dodge",
+      "nameZh": null,
+      "nameZhUnofficial": "闪避",
+      "school": "Basic",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": "0.5+0.6(str)",
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "On a successful dodge, the attack deals no damage."
+      ],
+      "unlock": "Starting/basic ability; exact starting loadout is random.",
+      "sourceUrl": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics"
+      ],
+      "notes": "wiki table gives energy-cost formula only; dodge chance formula is explicitly unknown on Game Mechanics page. 第三方中文资料译名：闪避；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "tactics_learner",
+      "nameEn": "Tactics Learner",
+      "nameZh": null,
+      "nameZhUnofficial": "战术初学者",
+      "school": "Basic",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Reveals more numeric details for fighting skills."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：战术初学者；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "high_kick",
+      "nameEn": "High Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "上踢",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "4+0.7(str)",
+      "energyCost": "1+1.2(str)",
+      "accuracy": "15+40(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "More powerful than Kick, with greater energy consumption."
+      ],
+      "unlock": "Req: none",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：上踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "high_punch",
+      "nameEn": "High Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "上拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "3+0.9(str)",
+      "energyCost": "2+1.2(str)",
+      "accuracy": "60+20(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "More powerful than Punch, with greater energy consumption."
+      ],
+      "unlock": "Req: 1/1/2",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：上拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "low_kick",
+      "nameEn": "Low Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "下踢",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "0.5+1.5(str)",
+      "energyCost": "0+1(str)",
+      "accuracy": "15+40(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Chance to reduce opponent stamina and agility."
+      ],
+      "unlock": "Req: none",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. Source-internal conflict: displayed accuracy row values 71..80 do not match the printed formula 15+40(Hit%). Formula preserved verbatim; no correction inferred. 第三方中文资料译名：下踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "uppercut",
+      "nameEn": "Uppercut",
+      "nameZh": null,
+      "nameZhUnofficial": "上勾拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "1.5+1.7(str)",
+      "energyCost": "1+1.5(str)",
+      "accuracy": "65+25(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Powerful attack; described as not requiring much agility."
+      ],
+      "unlock": "Req: 3/1/2",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：上勾拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "skip_attacks",
+      "nameEn": "Skip Attacks",
+      "nameZh": null,
+      "nameZhUnofficial": "跳过攻击阶段",
+      "school": "Basic",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Increases chance to skip an attack phase and regenerate energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：跳过攻击阶段；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "active_skill",
+      "nameEn": "Active Skill",
+      "nameZh": null,
+      "nameZhUnofficial": "技能槽",
+      "school": "Basic",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Adds one combat ability slot."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：技能槽；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "do_not_fall_down",
+      "nameEn": "Do Not Fall Down",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷专精",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility will not decay below 4."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：敏捷专精；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "meat_runner",
+      "nameEn": "Meat Runner",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力专精",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Stamina will not decay below 4."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：耐力专精；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "muscle_memory",
+      "nameEn": "Muscle Memory",
+      "nameZh": null,
+      "nameZhUnofficial": "力量专精",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength will not decay below 4."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：力量专精；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "backhand_high_punch",
+      "nameEn": "Backhand High Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "反手上拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "3+2(str)",
+      "energyCost": "2+1.5(str)",
+      "accuracy": "20+60(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "High punch described as effective but agility-dependent."
+      ],
+      "unlock": "Req: 1/4/2",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：反手上拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "backhand_punch",
+      "nameEn": "Backhand Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "反手正拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "2+1.5(str)",
+      "energyCost": "2+1.5(str)",
+      "accuracy": "45+35(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Powerful punch with higher cost."
+      ],
+      "unlock": "Req: 2/1/4",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：反手正拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "crosspunch",
+      "nameEn": "Crosspunch",
+      "nameZh": null,
+      "nameZhUnofficial": "交叉拳",
+      "school": "Basic",
+      "type": "attack",
+      "subType": null,
+      "damage": "2+2(str)",
+      "energyCost": "1.5+1.6(str)",
+      "accuracy": "60+20(Hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Power punch described as not requiring high agility."
+      ],
+      "unlock": "Req: 4/1/2",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：交叉拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "rice_eater",
+      "nameEn": "Rice Eater",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷训练",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：敏捷训练；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "red_sneakers",
+      "nameEn": "Red Sneakers",
+      "nameZh": null,
+      "nameZhUnofficial": "红色跑鞋",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "City travel time -30%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：红色跑鞋；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "good_sneakers",
+      "nameEn": "Good Sneakers",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力训练",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Stamina training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：耐力训练；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "some_motivation",
+      "nameEn": "Some Motivation",
+      "nameZh": null,
+      "nameZhUnofficial": "力量训练",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：力量训练；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "way_of_the_tiger",
+      "nameEn": "Way of the Tiger",
+      "nameZh": null,
+      "nameZhUnofficial": "疾如虎",
+      "school": "Basic",
+      "type": "style",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Unlocks the Tiger branch/style."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：疾如虎；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "way_of_the_turtle",
+      "nameEn": "Way of the Turtle",
+      "nameZh": null,
+      "nameZhUnofficial": "徐如龟",
+      "school": "Basic",
+      "type": "style",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Unlocks the Turtle branch/style."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：徐如龟；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "way_of_the_bear",
+      "nameEn": "Way of the Bear",
+      "nameZh": null,
+      "nameZhUnofficial": "烈如熊",
+      "school": "Basic",
+      "type": "style",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Unlocks the Bear branch/style."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：烈如熊；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "fast_reaction",
+      "nameEn": "Fast Reaction",
+      "nameZh": null,
+      "nameZhUnofficial": "快速反应",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Improves dodge success chance; slightly increases energy consumption."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：快速反应；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "fine_block",
+      "nameEn": "Fine Block",
+      "nameZh": null,
+      "nameZhUnofficial": "精密格挡",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Improves block success chance; slightly increases energy consumption."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：精密格挡；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "active_skill_ii",
+      "nameEn": "Active Skill II",
+      "nameZh": null,
+      "nameZhUnofficial": "技能槽Ⅱ",
+      "school": "Basic",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Adds one combat ability slot."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：技能槽Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "long_timer",
+      "nameEn": "Long Timer",
+      "nameZh": null,
+      "nameZhUnofficial": "从长计议",
+      "school": "Basic",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Positive effects on you and negative effects on opponent last longer."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Skill_Trees_(Punch_Club_1)"
+      ],
+      "notes": "Exact prerequisite edge in the tree was not recoverable as text; Skill Trees page is layout/image based. 第三方中文资料译名：从长计议；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "boxing_punch",
+      "nameEn": "Boxing Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "拳击正拳",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Punch; strength-dependent damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：拳击正拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "knee_crush",
+      "nameEn": "Knee Crush",
+      "nameZh": null,
+      "nameZhUnofficial": "断腿",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": "0+1.7(str)",
+      "energyCost": "0+0.6(str)",
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Low Kick; debuffs target stamina and agility."
+      ],
+      "unlock": "Req: none; wiki annotation: unlocks:1",
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "wiki table gives damage and energy formulas; no accuracy formula printed. 第三方中文资料译名：断腿；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "powerful_uppercut",
+      "nameEn": "Powerful Uppercut",
+      "nameZh": null,
+      "nameZhUnofficial": "强力上勾拳",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Uppercut; higher damage/energy and debuffs target stamina."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：强力上勾拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "hardbone",
+      "nameEn": "Hardbone",
+      "nameZh": null,
+      "nameZhUnofficial": "坚骨",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Block modifier: blocked strike temporarily reduces enemy agility by 20%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：坚骨；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "hook",
+      "nameEn": "Hook",
+      "nameZh": null,
+      "nameZhUnofficial": "勾拳",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces High Punch; difficult to hit, high damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：勾拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "clothesline",
+      "nameEn": "Clothesline",
+      "nameZh": null,
+      "nameZhUnofficial": "近线战术",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Crosspunch; strongly strength-dependent damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：近线战术；未确认属于官方中文本地化，因此 nameZh 保持 null。",
+      "rawSourceName": "Closeline"
+    },
+    {
+      "id": "beef_hammer",
+      "nameEn": "Beef Hammer",
+      "nameZh": null,
+      "nameZhUnofficial": "牛肉锤",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strike modifier: attacks gain a chance to reduce opponent stamina."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：牛肉锤；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "elbow",
+      "nameEn": "Elbow",
+      "nameZh": null,
+      "nameZhUnofficial": "厄尔尼诺",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Debuffing strike that greatly reduces opponent agility."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：厄尔尼诺；未确认属于官方中文本地化，因此 nameZh 保持 null。",
+      "rawSourceName": "Elblow"
+    },
+    {
+      "id": "triple_punch",
+      "nameEn": "Triple Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "三连拳",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: Boxing Punch occurs in series more often and costs less energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：三连拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "counter_cross",
+      "nameEn": "Counter-cross",
+      "nameZh": null,
+      "nameZhUnofficial": "交叉迎击",
+      "school": "Bear",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Counterattack usable from defense; hit reduces opponent energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：交叉迎击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "power_block",
+      "nameEn": "Power Block",
+      "nameZh": null,
+      "nameZhUnofficial": "强力格挡",
+      "school": "Bear",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": "0.5+0.3(str)",
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Block; successful block temporarily increases Strength."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. Source-internal conflict: printed formula is 0.5+0.3(str), but displayed 1..10 row is 4.7..11. Formula preserved; no inferred correction. 第三方中文资料译名：强力格挡；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "muscle_memory_ii",
+      "nameEn": "Muscle Memory II",
+      "nameZh": null,
+      "nameZhUnofficial": "力量专精Ⅱ",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength will not decay below 8."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：力量专精Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "diehard",
+      "nameEn": "Diehard",
+      "nameZh": null,
+      "nameZhUnofficial": "顽固份子",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "After knockdown, chance to regain 30% of energy on getting up; trigger chance unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：顽固份子；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "tormentor_strikes",
+      "nameEn": "Tormentor Strikes",
+      "nameZh": null,
+      "nameZhUnofficial": "痛苦之击",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: successful strikes reduce opponent agility."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：痛苦之击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "some_motivation_ii",
+      "nameEn": "Some Motivation II",
+      "nameZh": null,
+      "nameZhUnofficial": "力量训练Ⅱ",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：力量训练Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "exhauster",
+      "nameEn": "Exhauster",
+      "nameZh": null,
+      "nameZhUnofficial": "真空能量",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: strikes deal extra energy damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：真空能量；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "sidestep",
+      "nameEn": "Sidestep",
+      "nameZh": null,
+      "nameZhUnofficial": "回避",
+      "school": "Bear",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": "1+0.6(str)",
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Dodge; opponent spends additional energy when trying to hit you."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. Source-internal conflict: printed formula is 1+0.6(str), but displayed 1..10 row is 2.2..13. Formula preserved; no inferred correction. 第三方中文资料译名：回避；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "iron_skull",
+      "nameEn": "Iron Skull",
+      "nameZh": null,
+      "nameZhUnofficial": "铁骨",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Hardbone; blocked strike temporarily reduces enemy agility by 30%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：铁骨；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "boxer",
+      "nameEn": "Boxer",
+      "nameZh": null,
+      "nameZhUnofficial": "拳击手",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Increases hit chance of boxing abilities; exact percentage not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：拳击手；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "boxing_jab_series",
+      "nameEn": "Boxing Jab Series",
+      "nameZh": null,
+      "nameZhUnofficial": "拳击刺拳连击",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces High Punch; series of strikes; follow-up strikes gain accuracy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：拳击刺拳连击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "strength_focus",
+      "nameEn": "Strength Focus",
+      "nameZh": null,
+      "nameZhUnofficial": "力量焦点",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Adds one combat ability slot."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：力量焦点；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "wreck_em",
+      "nameEn": "Wreck'Em",
+      "nameZh": null,
+      "nameZhUnofficial": "能量毁灭",
+      "school": "Bear",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: missed strikes cost half normal energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：能量毁灭；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "muscle_memory_iii",
+      "nameEn": "Muscle Memory III",
+      "nameZh": null,
+      "nameZhUnofficial": "力量专精Ⅲ",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength will not decay below 13."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：力量专精Ⅲ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "some_motivation_iii",
+      "nameEn": "Some Motivation III",
+      "nameZh": null,
+      "nameZhUnofficial": "力量训练Ⅲ",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strength training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：力量训练Ⅲ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "berserker",
+      "nameEn": "Berserker",
+      "nameZh": null,
+      "nameZhUnofficial": "狂战士",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "At 30% HP or less, damage +30%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：狂战士；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "ruthless_aggression",
+      "nameEn": "Ruthless Aggression",
+      "nameZh": null,
+      "nameZhUnofficial": "残忍侵略",
+      "school": "Bear",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Cannot use defensive abilities, blocks, dodges, or counterattacks; damage +20%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：残忍侵略；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "thunderbolt",
+      "nameEn": "Thunderbolt",
+      "nameZh": null,
+      "nameZhUnofficial": "雷霆一击",
+      "school": "Bear",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Successful strike removes 30% of opponent energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text; leave unlock null rather than infer from visual tree order. 第三方中文资料译名：雷霆一击；未确认属于官方中文本地化，因此 nameZh 保持 null。",
+      "rawSourceName": "Thunder"
+    },
+    {
+      "id": "karate_kick",
+      "nameEn": "Karate Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "空手道踢",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Kick; more damage for less energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：空手道踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "karate_high_kick",
+      "nameEn": "Karate High Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "空手道上踢",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces High Kick; more damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：空手道上踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "backlash",
+      "nameEn": "Backlash",
+      "nameZh": null,
+      "nameZhUnofficial": "激烈反应",
+      "school": "Tiger",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Counterattack: a dodged attack reflects 25% of attacker damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：激烈反应；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "karate_chop",
+      "nameEn": "Karate Chop",
+      "nameZh": null,
+      "nameZhUnofficial": "空手道正拳",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": "2+1.5(str)",
+      "energyCost": "2+1.2(str)",
+      "accuracy": "20+55(hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Punch; more damage for less energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：空手道正拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "wind_flow_dodge",
+      "nameEn": "Wind Flow Dodge",
+      "nameZh": null,
+      "nameZhUnofficial": "风之步",
+      "school": "Tiger",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Dodge; lower energy cost, strongly agility-dependent."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：风之步；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "rain_of_strikes",
+      "nameEn": "Rain of Strikes",
+      "nameZh": null,
+      "nameZhUnofficial": "雨之击",
+      "school": "Tiger",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strike modifier: opponent blocking is 25% less effective."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：雨之击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "technician",
+      "nameEn": "Technician",
+      "nameZh": null,
+      "nameZhUnofficial": "熟技之人",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Dodge chance is higher and more agility-dependent; exact formula unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：熟技之人；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "do_not_fall_down_ii",
+      "nameEn": "Do Not Fall Down II",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷专精Ⅱ",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility will not decay below 8."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：敏捷专精Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "penetrating_strike",
+      "nameEn": "Penetrating Strike",
+      "nameZh": null,
+      "nameZhUnofficial": "渗透劲",
+      "school": "Tiger",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: ignores up to 50% of stamina-based protection."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：渗透劲；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "crossroads",
+      "nameEn": "Crossroads",
+      "nameZh": null,
+      "nameZhUnofficial": "转捩点",
+      "school": "Tiger",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Dodge; counterattack deals pure damage on successful activation; exact damage not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：转捩点；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "cutthroat",
+      "nameEn": "Cutthroat",
+      "nameZh": null,
+      "nameZhUnofficial": "暴徒",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": "3+2(str)",
+      "energyCost": "1.5+1.7(str)",
+      "accuracy": "20+60(hit%)",
+      "initiativeCost": null,
+      "effects": [
+        "Replaces High Punch; increases opponent energy cost for all skills; amount not stated here."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. Source-internal conflict: displayed numeric damage/energy row appears copied from Karate Chop and does not match the printed formulas; formulas preserved. 第三方中文资料译名：暴徒；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "unstoppable",
+      "nameEn": "Unstoppable",
+      "nameZh": null,
+      "nameZhUnofficial": "势不可挡",
+      "school": "Tiger",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Backlash; counterattack reflects a fraction of dodged attack potential damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. Cross-source conflict: current wiki Skills page says 40% damage reflected; 2016 bilingual skill transcription says 50% potential damage reflected. Both retained in conflict list; effects field intentionally does not choose one. 第三方中文资料译名：势不可挡；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "sharp_sting",
+      "nameEn": "Sharp Sting",
+      "nameZh": null,
+      "nameZhUnofficial": "尖刺",
+      "school": "Tiger",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Rain of Strikes; opponent blocking is 50% less effective."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：尖刺；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "demoralize",
+      "nameEn": "Demoralize",
+      "nameZh": null,
+      "nameZhUnofficial": "锐气",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Opponent damage -20%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：锐气；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "rice_eater_ii",
+      "nameEn": "Rice Eater II",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷训练Ⅱ",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：敏捷训练Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "cool_headed",
+      "nameEn": "Cool-headed",
+      "nameZh": null,
+      "nameZhUnofficial": "冷静",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "If a strike is blocked, other strikes cost 25% less energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：冷静；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "flip_kick",
+      "nameEn": "Flip Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "急踢",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Karate Kick; English source says more damage for same energy cost."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. Translation conflict in 2016 page: English says more damage for same energy; Chinese line says lower energy with unchanged damage. English source meaning preserved. 第三方中文资料译名：急踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "kick_dropper",
+      "nameEn": "Kick Dropper",
+      "nameZh": null,
+      "nameZhUnofficial": "踢技达人",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Increases leg-strike damage; magnitude not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：踢技达人；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "roundhouse_kick",
+      "nameEn": "Roundhouse Kick",
+      "nameZh": null,
+      "nameZhUnofficial": "回旋踢",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Karate High Kick; lowers opponent block chance by 30%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：回旋踢；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "slave_of_the_wind",
+      "nameEn": "Slave of the Wind",
+      "nameZh": null,
+      "nameZhUnofficial": "风之奴隶",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Caps Strength and Stamina; cap differs by source/version."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. Version/source conflict: 2016 transcription says STR/STA cannot exceed 8; current wiki build prose says full-tree access requires not over 9. A wiki glitch page also mentions mobile behavior around 8. No normalization performed. 第三方中文资料译名：风之奴隶；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "agility_focus",
+      "nameEn": "Agility Focus",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷焦点",
+      "school": "Tiger",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Adds one combat ability slot."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：敏捷焦点；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "do_not_fall_down_iii",
+      "nameEn": "Do Not Fall Down III",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷专精Ⅲ",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility will not decay below 13."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：敏捷专精Ⅲ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "mimic_techniques",
+      "nameEn": "Mimic Techniques",
+      "nameZh": null,
+      "nameZhUnofficial": "影子魔法",
+      "school": "Tiger",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "At beginning of attack phase, returns opponent damage; exact formula not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：影子魔法；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "ninjutsu_fan",
+      "nameEn": "Ninjutsu Fan",
+      "nameZh": null,
+      "nameZhUnofficial": "忍术迷",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "On dodge, chance to increase agility level by 10%; trigger chance not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：忍术迷；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "rice_eater_iii",
+      "nameEn": "Rice Eater III",
+      "nameZh": null,
+      "nameZhUnofficial": "敏捷训练Ⅲ",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Agility training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：敏捷训练Ⅲ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "cobra_strike",
+      "nameEn": "Cobra Strike",
+      "nameZh": null,
+      "nameZhUnofficial": "王蛇打击",
+      "school": "Tiger",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Venom strike drains opponent health until end of combat per 2016 description; tick amount/rate not found."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：王蛇打击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "controlled_fury",
+      "nameEn": "Controlled Fury",
+      "nameZh": null,
+      "nameZhUnofficial": "愤怒管理",
+      "school": "Tiger",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Below 30% HP, agility level +30%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge not recovered as text. 第三方中文资料译名：愤怒管理；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "paw_punch",
+      "nameEn": "Paw Punch",
+      "nameZh": null,
+      "nameZhUnofficial": "爪拳",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Punch; more damage and more energy cost."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：爪拳；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "headbutt",
+      "nameEn": "Headbutt",
+      "nameZh": null,
+      "nameZhUnofficial": "头槌",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Moderate damage; opponent block/dodge chance -25%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：头槌；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "suicidal_attack",
+      "nameEn": "Suicidal Attack",
+      "nameZh": null,
+      "nameZhUnofficial": "自杀攻击",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Lower own block/dodge chances; attacking moves cost 30% less energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：自杀攻击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "meat_hook",
+      "nameEn": "Meat Hook",
+      "nameZh": null,
+      "nameZhUnofficial": "肉钩",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier: strikes have a chance to make opponent skip attack phase."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：肉钩；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "energizer",
+      "nameEn": "Energizer",
+      "nameZh": null,
+      "nameZhUnofficial": "激发",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Modifier affecting chance opponent attack phase begins; depends on your energy pool; exact formula unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：激发；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "hard_block",
+      "nameEn": "Hard Block",
+      "nameZh": null,
+      "nameZhUnofficial": "强硬防御",
+      "school": "Turtle",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "On successful block, opponent receives 30% of own potential damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：强硬防御；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "iron_curtain",
+      "nameEn": "Iron Curtain",
+      "nameZh": null,
+      "nameZhUnofficial": "钢铁屏障",
+      "school": "Turtle",
+      "type": "defense",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Block; consumes more energy but blocks more incoming damage."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：钢铁屏障；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "bear_hug",
+      "nameEn": "Bear Hug",
+      "nameZh": null,
+      "nameZhUnofficial": "熊抱",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Block modifier: more mitigation but more energy use."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：熊抱；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "backbreaker",
+      "nameEn": "Backbreaker",
+      "nameZh": null,
+      "nameZhUnofficial": "断背",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Backhand Punch; more damage; hit may force opponent to skip attack phase."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：断背；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "meat_runner_ii",
+      "nameEn": "Meat Runner II",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力专精Ⅱ",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Stamina will not decay below 8."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：耐力专精Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "anger_train",
+      "nameEn": "Anger Train",
+      "nameZh": null,
+      "nameZhUnofficial": "愤怒列车",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Each blocked attack adds damage to next attack phase; exact amount unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：愤怒列车；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "brawler",
+      "nameEn": "Brawler",
+      "nameZh": null,
+      "nameZhUnofficial": "格斗家",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Defense modifier: extra chance to stop opponent attack phase and start yours."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：格斗家；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "shining_knight",
+      "nameEn": "Shining Knight",
+      "nameZh": null,
+      "nameZhUnofficial": "闪灵骑士",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Receive less damage as stamina rises; exact formula unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：闪灵骑士；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "heavy_workout",
+      "nameEn": "Heavy Workout",
+      "nameZh": null,
+      "nameZhUnofficial": "重型训练",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Energy use while working out -15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：重型训练；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "forehead_blow",
+      "nameEn": "Forehead Blow",
+      "nameZh": null,
+      "nameZhUnofficial": "前额一击",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Backhand High Punch; more damage and more energy cost."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：前额一击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "hands_free",
+      "nameEn": "Hands-Free",
+      "nameZh": null,
+      "nameZhUnofficial": "解放双手",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Hand-based incoming damage -30%; leg-based incoming damage +20%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：解放双手；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "good_sneakers_ii",
+      "nameEn": "Good Sneakers II",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力训练Ⅱ",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Stamina training gain +15%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：耐力训练Ⅱ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "pain_lover",
+      "nameEn": "Pain Lover",
+      "nameZh": null,
+      "nameZhUnofficial": "施虐狂",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Each received strike speeds energy regeneration; exact amount/duration unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：施虐狂；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "kick_denier",
+      "nameEn": "Kick Denier",
+      "nameZh": null,
+      "nameZhUnofficial": "解放双脚",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Leg-based incoming damage -30%; hand-based incoming damage +20%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：解放双脚；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "huckle_bone_blow",
+      "nameEn": "Huckle Bone Blow",
+      "nameZh": null,
+      "nameZhUnofficial": "髋部打击",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Kick; on hit opponent skills cost 30% more energy."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：髋部打击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "barrel_strike",
+      "nameEn": "Barrel Strike",
+      "nameZh": null,
+      "nameZhUnofficial": "高速打击",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces Paw Punch; high chance to hit again when dodged; probability unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：高速打击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "stamina_focus",
+      "nameEn": "Stamina Focus",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力焦点",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Adds one combat ability slot."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：耐力焦点；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "meat_runner_iii",
+      "nameEn": "Meat Runner III",
+      "nameZh": null,
+      "nameZhUnofficial": "耐力专精Ⅲ",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Stamina will not decay below 13."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：耐力专精Ⅲ；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "spear",
+      "nameEn": "Spear",
+      "nameZh": null,
+      "nameZhUnofficial": "矛",
+      "school": "Turtle",
+      "type": "attack",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Replaces High Punch; at 25% energy or less, strike costs 0."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：矛；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "no_rest",
+      "nameEn": "No Rest",
+      "nameZh": null,
+      "nameZhUnofficial": "永不停歇",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Neither fighter can rest; both regenerate less energy; exact reduction unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：永不停歇；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "bear_strike",
+      "nameEn": "Bear Strike",
+      "nameZh": null,
+      "nameZhUnofficial": "熊之打击",
+      "school": "Turtle",
+      "type": "other",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Strike modifier steals some opponent energy and gives it to you; amount unknown."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：熊之打击；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    },
+    {
+      "id": "infinite_energy",
+      "nameEn": "Infinite Energy",
+      "nameZh": null,
+      "nameZhUnofficial": "无尽能量",
+      "school": "Turtle",
+      "type": "passive",
+      "subType": null,
+      "damage": null,
+      "energyCost": null,
+      "accuracy": null,
+      "initiativeCost": null,
+      "effects": [
+        "Below 25% energy, all skill energy costs are reduced by 70%."
+      ],
+      "unlock": null,
+      "sourceUrl": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "sourceUrls": [
+        "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+        "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+        "https://punchclub.wiki.gg/wiki/Perks_(Punch_Club_1)"
+      ],
+      "notes": "Exact tree prerequisite edge and numeric damage/energy/accuracy values were not found in text sources unless explicitly stated in effects. 第三方中文资料译名：无尽能量；未确认属于官方中文本地化，因此 nameZh 保持 null。"
+    }
+  ],
+  "opponents": [
+    {
+      "nameEn": "Big Bobo",
+      "str": 8,
+      "agi": 5,
+      "sta": 3,
+      "hp": null,
+      "skills": [
+        "High Punch",
+        "Bat strike (unique)",
+        "Berserker"
+      ],
+      "sourceUrl": "https://punch-club.fandom.com/ru/wiki/%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%91%D0%BE%D0%B1%D0%B0",
+      "sourceUrls": [
+        "https://punch-club.fandom.com/ru/wiki/%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%91%D0%BE%D0%B1%D0%B0",
+        "https://steamcommunity.com/app/394310/discussions/1/458605613411100132/"
+      ],
+      "notes": "Russian Fandom opponent page gives first-meeting stats 8/5/3 and names High Punch, unique bat strike, Berserker. Steam community independently describes 8/5/3. HP not transcribed; not calculated from formula."
+    },
+    {
+      "nameEn": "Silver",
+      "str": 5,
+      "agi": 5,
+      "sta": 5,
+      "hp": null,
+      "skills": [],
+      "sourceUrl": "https://punch-club.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%80",
+      "sourceUrls": [
+        "https://punch-club.fandom.com/ru/wiki/%D0%A1%D0%B8%D0%BB%D1%8C%D0%B2%D0%B5%D1%80",
+        "https://steamcommunity.com/app/394310/discussions/1/458606248636620133/"
+      ],
+      "notes": "First spar stats 5/5/5. Russian page says neutral tactic but does not provide a stable skill list. HP left null rather than derived."
+    },
+    {
+      "nameEn": "Jared",
+      "str": null,
+      "agi": null,
+      "sta": null,
+      "hp": null,
+      "skills": [
+        "Karate Kick / upgraded Karate kicks",
+        "Rain of Strikes",
+        "Low Kick",
+        "Wind Flow Dodge",
+        "Skip Attacks (observed later round)"
+      ],
+      "sourceUrl": "https://forums.somethingawful.com/showthread.php?threadid=4055646",
+      "sourceUrls": [
+        "https://forums.somethingawful.com/showthread.php?threadid=4055646"
+      ],
+      "notes": "Let’s Play observation, not authoritative data dump. Exact stats/HP not available in text; skills can change between rounds."
+    },
+    {
+      "nameEn": "Kick Sloan",
+      "str": 2,
+      "agi": null,
+      "sta": null,
+      "hp": null,
+      "skills": [
+        "Paw Punch",
+        "Powerful Uppercut",
+        "Exhauster",
+        "Iron Curtain"
+      ],
+      "sourceUrl": "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646",
+      "sourceUrls": [
+        "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646"
+      ],
+      "notes": "Let’s Play text explicitly says Sloan has 2 Strength and lists these four abilities. AGI/STA/HP unavailable in text."
+    },
+    {
+      "nameEn": "Trevor",
+      "str": null,
+      "agi": null,
+      "sta": null,
+      "hp": null,
+      "skills": [
+        "Block",
+        "Paw Punch",
+        "Powerful Uppercut",
+        "Karate Kick",
+        "Crossroads"
+      ],
+      "sourceUrl": "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646",
+      "sourceUrls": [
+        "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646"
+      ],
+      "notes": "Let’s Play text explicitly lists the skill set; exact stats/HP are only visible in an image and were not transcribed, so left null."
+    },
+    {
+      "nameEn": "Beesteady",
+      "str": null,
+      "agi": null,
+      "sta": null,
+      "hp": null,
+      "skills": [
+        "Paw Punch",
+        "Powerful Uppercut",
+        "Exhauster",
+        "Iron Curtain",
+        "Fine Block",
+        "Shining Knight"
+      ],
+      "sourceUrl": "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646",
+      "sourceUrls": [
+        "https://forums.somethingawful.com/showthread.php?pagenumber=2&threadid=4055646"
+      ],
+      "notes": "Let’s Play observation. Exact numeric stats/HP not available in text."
+    }
+  ],
+  "conflicts": [
+    {
+      "field": "claimedSkillCount",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "Basic: 24 unlockable nodes; Bear: 27; Tiger: 27; Turtle: 27",
+      "sourceB": "user request",
+      "valueB": "27 skills total across Basic/Bear/Tiger/Turtle",
+      "resolution": "No forced 27-row table. Dataset contains 105 documented unlockable tree nodes plus 4 core starting combat abilities."
+    },
+    {
+      "field": "Low Kick accuracy table",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "printed formula 15+40(Hit%); displayed row values 71..80",
+      "resolution": "Preserve printed formula; flag internal inconsistency; do not infer a replacement formula."
+    },
+    {
+      "field": "Power Block energy table",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "printed 0.5+0.3(str); displayed row 4.7..11",
+      "resolution": "Preserve printed formula; flag internal inconsistency."
+    },
+    {
+      "field": "Sidestep energy table",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "printed 1+0.6(str); displayed row 2.2..13",
+      "resolution": "Preserve printed formula; flag internal inconsistency."
+    },
+    {
+      "field": "Cutthroat numeric table",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "printed damage 3+2(str), energy 1.5+1.7(str); displayed rows look copied from Karate Chop",
+      "resolution": "Preserve printed formulas; do not replace with values implied by the row."
+    },
+    {
+      "field": "Unstoppable reflection",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Skills_(Punch_Club_1)",
+      "valueA": "40% damage reflected",
+      "sourceB": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "valueB": "50% attacker potential damage reflected",
+      "resolution": "Unresolved/version-sensitive; both retained."
+    },
+    {
+      "field": "Slave of the Wind cap",
+      "sourceA": "https://www.entertainment14.net/blog/post/110935998-punch-club-%E6%8A%80%E8%83%BD%E5%90%8D%E7%A8%B1%E5%8F%8A%E6%95%88%E6%9E%9C%E5%A4%A7%E5%85%A8",
+      "valueA": "STR/STA cap 8",
+      "sourceB": "https://punch-club.fandom.com/wiki/Builds",
+      "valueB": "full tree access described as not over 9",
+      "resolution": "Likely patch/version wording difference; unresolved."
+    },
+    {
+      "field": "wiki.gg vs Fandom provenance",
+      "sourceA": "https://punchclub.wiki.gg/wiki/Guides_and_Tips_(Punch_Club_1)/Game_Mechanics",
+      "sourceB": "https://punch-club.fandom.com/wiki/Game_Mechanics",
+      "valueA": "wiki.gg page states older pages were adapted from Fandom; indexed mechanics formulas match",
+      "resolution": "Do not treat matching values as independent corroboration. No numeric conflict found for ACC/REG/ARM/HP formulas."
+    }
+  ],
+  "excludedAsPunchClub2": [
+    {
+      "url": "https://punchclub.wiki.gg/wiki/Game_Mechanics_(Punch_Club_2)",
+      "reason": "Contains numeric initiative, split offensive/defensive slots and related action logic for Punch Club 2. These fields were NOT imported into Punch Club 1."
+    }
+  ]
+}

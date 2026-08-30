@@ -1,10 +1,10 @@
 import { cloneLoadout } from './fighters';
-import { tryGetMove } from './moves';
 import { createRng, type Rng } from './rng';
 import type { Emit, EventInput } from './resolve';
-import { resolveAttack } from './resolve';
-import { ACTIONS_PER_ROUND, derive, EMPTY_SLOT_ENERGY, ROUNDS, STAGGER_ENERGY } from './stats';
+import { pickAttack, resolveAttack } from './resolve';
+import { derive, MAX_ROUNDS } from './stats';
 import type { FighterDef, FighterState, FightState, Loadout, RoundEvent, Side } from './types';
+import { UNK } from './unknowns';
 
 export function other(side: Side): Side {
   return side === 'player' ? 'opponent' : 'player';
@@ -15,15 +15,13 @@ export function fighterOf(state: FightState, side: Side): FighterState {
 }
 
 function makeFighter(def: FighterDef, loadout?: Loadout): FighterState {
-  const derived = derive(def.stats);
+  const derived = derive(def.stats, def.health);
   return {
     def,
     derived,
     hp: derived.maxHp,
     energy: derived.maxEnergy,
-    offCursor: 0,
-    stunned: false,
-    knockedDown: false,
+    lostPhases: 0,
     loadout: cloneLoadout(loadout ?? def.loadout),
   };
 }
@@ -34,16 +32,12 @@ export function createFight(
   seed: number,
   playerLoadout?: Loadout,
 ): FightState {
-  const player = makeFighter(playerDef, playerLoadout);
-  const opponent = makeFighter(opponentDef);
-  // 先手值高的一方先出手，相同则玩家先手
-  const turn: Side = opponent.derived.initiative > player.derived.initiative ? 'opponent' : 'player';
   return {
     round: 0,
-    player,
-    opponent,
-    turn,
-    turnActionsLeft: (turn === 'player' ? player : opponent).derived.initiative,
+    player: makeFighter(playerDef, playerLoadout),
+    opponent: makeFighter(opponentDef),
+    // 一代没有先手值系统，谁先出手也没有公开规则；固定由玩家先手
+    attacker: 'player',
     rng: seed >>> 0,
     over: false,
     result: null,
@@ -63,7 +57,7 @@ export function cloneState(s: FightState): FightState {
   };
 }
 
-/** 界面在回合间改了配槽后写回状态 */
+/** 界面在回合间改了技能配置后写回状态 */
 export function applyLoadout(state: FightState, side: Side, loadout: Loadout): FightState {
   const next = cloneState(state);
   fighterOf(next, side).loadout = cloneLoadout(loadout);
@@ -72,8 +66,11 @@ export function applyLoadout(state: FightState, side: Side, loadout: Loadout): F
 
 /**
  * 模拟一个回合，返回该回合的完整事件流 + 新状态。
- * 引擎一次性把回合算完（不是每帧驱动），渲染层只负责按时间线回放这条事件流：
- * 战斗结果因此与渲染完全解耦，同 seed 必定同结果。
+ *
+ * 一代的回合结构：回合内有一个倒计时器，双方交替进行攻防阶段，最多打 20 个回合。
+ * 计时器时长没有公开，所以这里用「每回合固定若干个阶段」近似 —— 该值在 unknowns.ts 里。
+ *
+ * 引擎一次性把回合算完（不是每帧驱动），渲染层只负责按时间线回放这条事件流。
  */
 export function simulateRound(prev: FightState): { events: RoundEvent[]; state: FightState } {
   const state = cloneState(prev);
@@ -93,112 +90,46 @@ export function simulateRound(prev: FightState): { events: RoundEvent[]; state: 
 
   state.round += 1;
 
-  const regen: Record<Side, number> = { player: 0, opponent: 0 };
-  if (state.round > 1) {
-    for (const side of ['player', 'opponent'] as const) {
-      const f = fighterOf(state, side);
-      const before = f.energy;
-      f.energy = Math.min(f.derived.maxEnergy, f.energy + f.derived.roundRegen);
-      regen[side] = f.energy - before;
-    }
-  }
-  emit({
-    type: 'round_start',
-    round: state.round,
-    regen,
-    text: `第 ${state.round} 回合 —— 开始`,
-  });
+  emit({ type: 'round_start', round: state.round, text: `第 ${state.round} 回合 —— 开始` });
 
-  let budget = ACTIONS_PER_ROUND;
-  while (budget > 0 && !state.over) {
-    if (state.turnActionsLeft <= 0) {
-      state.turn = other(state.turn);
-      const f = fighterOf(state, state.turn);
-      state.turnActionsLeft = f.derived.initiative;
-      emit({
-        type: 'turn_switch',
-        side: state.turn,
-        actions: state.turnActionsLeft,
-        text: `${f.def.name} 抢到主动权，可以连打 ${state.turnActionsLeft} 拍`,
-      });
-    }
-
-    performAction(state, state.turn, rng, emit);
-    state.turnActionsLeft -= 1;
-    budget -= 1;
-
+  for (let phase = 0; phase < UNK.phasesPerRound && !state.over; phase++) {
+    performPhase(state, state.attacker, rng, emit);
+    state.attacker = other(state.attacker);
     checkKo(state, emit);
   }
 
   if (!state.over) {
     emit({ type: 'round_end', round: state.round, text: `第 ${state.round} 回合结束` });
-    if (state.round >= ROUNDS) {
-      judge(state);
-    }
+    if (state.round >= MAX_ROUNDS) judge(state);
   }
 
   state.rng = rng.state();
   return { events, state };
 }
 
-function performAction(state: FightState, side: Side, rng: Rng, emit: Emit): void {
+function performPhase(state: FightState, side: Side, rng: Rng, emit: Emit): void {
   const self = fighterOf(state, side);
 
-  if (self.knockedDown) {
-    self.knockedDown = false;
-    emit({
-      type: 'skip',
-      side,
-      cause: 'knockdown',
-      text: `${self.def.name} 正从地上爬起来，这一拍没了`,
-    });
-    return;
-  }
-  if (self.stunned) {
-    self.stunned = false;
-    emit({ type: 'skip', side, cause: 'stun', text: `${self.def.name} 还没缓过来，出不了手` });
+  // 战斗中的体力回复：wiki 描述为「不断浮出的小额数字」，所以放在每个自己的阶段开始时
+  self.energy = Math.min(self.derived.maxEnergy, self.energy + UNK.inFightRegen(self.derived.reg));
+
+  if (self.lostPhases > 0) {
+    self.lostPhases -= 1;
+    emit({ type: 'skip', side, text: `${self.def.name} 还在从地上爬起来` });
     return;
   }
 
-  const slots = self.loadout.offense;
-  const slotId = slots.length > 0 ? (slots[self.offCursor % slots.length] ?? null) : null;
-  self.offCursor += 1;
-  const move = tryGetMove(slotId);
+  const move = pickAttack(self, rng);
 
-  // 空槽：不出手，换一口气（原作机制）
+  // 体力不足以打出任何已装备的攻击技能
   if (!move) {
-    const gain = Math.min(EMPTY_SLOT_ENERGY, self.derived.maxEnergy - self.energy);
-    self.energy += gain;
-    emit({
-      type: 'empty_slot',
-      side,
-      energyGain: gain,
-      text: `${self.def.name} 空出一拍调整节奏，回复 ${gain} 体力`,
-    });
-    return;
-  }
-
-  if (move.kind === 'rest') {
-    const gain = Math.min(move.energyRestore ?? 0, self.derived.maxEnergy - self.energy);
-    self.energy += gain;
-    emit({
-      type: 'rest',
-      side,
-      move: move.id,
-      energyGain: gain,
-      text: `${self.def.name} ${move.name}，回复 ${gain} 体力`,
-    });
-    return;
-  }
-
-  if (self.energy < move.energyCost) {
-    const gain = Math.min(STAGGER_ENERGY, self.derived.maxEnergy - self.energy);
+    const gain = Math.min(UNK.exhaustedPhaseRegen, self.derived.maxEnergy - self.energy);
     self.energy += gain;
     emit({
       type: 'exhausted',
       side,
       energyGain: gain,
-      text: `${self.def.name} 体力不够打出${move.name}，踉跄了一下`,
+      text: `${self.def.name} 体力见底，这一拍只能喘气`,
     });
     return;
   }
@@ -221,21 +152,25 @@ function checkKo(state: FightState, emit: Emit): void {
   const opponentDown = state.opponent.hp <= 0;
   if (!playerDown && !opponentDown) return;
 
-  // 反击有可能让双方同时倒下 —— 判双 KO 平局
   const loser: Side | null = playerDown && opponentDown ? null : playerDown ? 'player' : 'opponent';
-  const text =
-    loser === null
-      ? '双方同时倒地 —— 双 KO！'
-      : `${fighterOf(state, loser).def.name} 倒下了，数到十也没能起来 —— KO！`;
-
-  emit({ type: 'ko', side: loser ?? 'player', text });
+  emit({
+    type: 'ko',
+    side: loser ?? 'player',
+    text:
+      loser === null
+        ? '双方同时倒地 —— 双 KO！'
+        : `${fighterOf(state, loser).def.name} 倒下了 —— KO！`,
+  });
   emit({ type: 'round_end', round: state.round, text: `第 ${state.round} 回合结束` });
 
   state.over = true;
   state.result = { winner: loser === null ? null : other(loser), method: 'ko', round: state.round };
 }
 
-/** 打满回合后按剩余血量百分比读分 */
+/**
+ * 20 回合内双方都没倒下 → 由系统判定。
+ * 原版的判定公式没有公开，这里按剩余血量百分比比较（见 unknowns.ts 的 decisionRule）。
+ */
 export function judge(state: FightState): void {
   const pr = state.player.hp / state.player.derived.maxHp;
   const or = state.opponent.hp / state.opponent.derived.maxHp;
@@ -244,7 +179,7 @@ export function judge(state: FightState): void {
   state.result = { winner, method: 'decision', round: state.round };
 }
 
-/** 一直打到分出结果，返回每回合的事件流。headless 批量模拟/调平衡用。 */
+/** 一直打到分出结果。headless 批量模拟用。 */
 export function simulateFight(initial: FightState): {
   rounds: RoundEvent[][];
   state: FightState;
@@ -252,7 +187,7 @@ export function simulateFight(initial: FightState): {
   let state = initial;
   const rounds: RoundEvent[][] = [];
   let guard = 0;
-  while (!state.over && guard++ < ROUNDS + 2) {
+  while (!state.over && guard++ < MAX_ROUNDS + 2) {
     const r = simulateRound(state);
     rounds.push(r.events);
     state = r.state;

@@ -1,107 +1,119 @@
 /**
- * 战斗核心类型定义。
+ * 战斗核心类型定义 —— 对标《拳击俱乐部》一代（The Dark Fist）。
  * 本目录（core/）是纯 TypeScript，不依赖 Phaser 或 React，可以 headless 运行与单测。
+ *
+ * 一代与二代的关键差别（二代的东西一律不要出现在这里）：
+ * - 一代是**一组共享技能槽**（最多 5 个），不是二代的进攻槽/防守槽分开
+ * - 一代**没有**数值化的先手值 initiative 与每招的 initiative 消耗
+ * - 技能槽顺序无意义（开发者原话），出招是随机抽取，没有跨回合游标
  */
 
 export type Side = 'player' | 'opponent';
 
-export type MoveKind = 'attack' | 'defense' | 'rest';
+/** 一代的四个流派 */
+export type School = 'Basic' | 'Bear' | 'Tiger' | 'Turtle';
 
-/** 渲染层用来挑动画的提示键，替换真素材时对着这个表接序列帧即可 */
+/** 只保留能进战斗的两类；被动/修饰/流派节点不在 MVP 范围内 */
+export type MoveKind = 'attack' | 'defense';
+
+/** 渲染层挑动画用；换真素材时对着这个表接序列帧 */
 export type AnimKey =
-  | 'jab'
-  | 'cross'
-  | 'hook'
+  | 'punch'
+  | 'high_punch'
   | 'uppercut'
-  | 'overhand'
-  | 'bodyshot'
-  | 'haymaker'
-  | 'guard'
-  | 'slip'
-  | 'parry'
-  | 'clinch'
-  | 'breathe';
+  | 'crosspunch'
+  | 'backhand'
+  | 'kick'
+  | 'high_kick'
+  | 'low_kick'
+  | 'knee'
+  | 'chop'
+  | 'block'
+  | 'dodge';
+
+/**
+ * 原版数值的形态：`base + perStr × STR`。
+ * 例：Punch 的伤害写作 `1+0.7(str)` → { base: 1, perStr: 0.7 }
+ */
+export interface StatFormula {
+  base: number;
+  perStr: number;
+}
+
+/**
+ * 命中率的形态：`base + perAcc × ACC`（百分比）。
+ * 例：Punch 的命中写作 `70+20(Hit%)` → { base: 70, perAcc: 20 }
+ * 其中 ACC = 3·AGI/(STR+AGI+STM)，见 stats.ts。
+ */
+export interface AccuracyFormula {
+  base: number;
+  perAcc: number;
+}
 
 export interface Move {
   id: string;
-  name: string;
+  nameEn: string;
+  /** 第三方 2016 年中文资料的译名，非官方本地化 */
+  nameZhUnofficial: string;
+  school: School;
   kind: MoveKind;
-  desc: string;
-  /** 使用该招式消耗的能量 */
-  energyCost: number;
-
-  // --- attack ---
-  baseDamage?: number;
-  /** 基础命中率 0..1 */
-  accuracy?: number;
-  /** 命中后使对手下个动作作废的概率 */
-  stunChance?: number;
-  /** 命中后额外抽干对手的能量 */
-  energyDrain?: number;
-
-  // --- defense ---
-  /** 百分比减伤 0..1 */
-  blockPct?: number;
-  /** 基础闪避率，会叠加防守方的 dodgeBonus */
-  dodge?: number;
-  /** 反击系数：把挡下的伤害按比例回敬给攻方 */
-  counter?: number;
-
-  // --- rest ---
-  energyRestore?: number;
-
+  /** 防守技能的两种形态：格挡（减伤）与闪避（成功则完全免伤） */
+  defenseKind?: 'block' | 'dodge';
+  /** 原样保留的效果描述 */
+  effects: string[];
+  energyCost: StatFormula;
+  damage?: StatFormula;
+  accuracy?: AccuracyFormula;
+  /** 该条数值的出处 */
+  sourceUrl: string;
+  /** 资料里记录的源内部矛盾，界面上会提示 */
+  conflict?: string;
   anim: AnimKey;
 }
 
+/** 一代用 STM 指代耐力，这里跟随原始资料的命名以减少转录误差 */
 export interface Stats {
-  /** 力量：伤害 */
   str: number;
-  /** 敏捷：先手值、暴击、闪避 */
   agi: number;
-  /** 耐力：血量、能量池与回复、减伤 */
-  sta: number;
+  stm: number;
 }
 
 export interface Derived {
+  /** baseHP = 38 + 6·STR + 3·AGI + 8·STM + 16·min(STR,AGI,STM) */
+  baseHp: number;
+  /** HP = baseHP/2 + baseHP·Health/2 */
   maxHp: number;
   maxEnergy: number;
-  /** 连续出手次数 */
-  initiative: number;
-  damageMult: number;
-  /** 固定减伤 */
-  armor: number;
-  critChance: number;
-  /** 叠加到闪避招式上的额外闪避率 */
-  dodgeBonus: number;
-  /** 每回合开始回复的能量 */
-  roundRegen: number;
+  /** ACC = 3·AGI / (STR+AGI+STM)，招式命中率公式里的 Hit% */
+  acc: number;
+  /** REG = 5 + STM×1.5（属性页显示值） */
+  reg: number;
+  /** ARM = STM×1.3 */
+  arm: number;
 }
 
-/** 槽位：招式 id 或 null（空槽） */
-export type Slot = string | null;
+/** 一代：一组共享技能槽，攻击与防守技能混装 */
+export type Loadout = string[];
 
-export interface Loadout {
-  /** 进攻槽，长度 OFFENSE_SLOTS。同一招放多份 = 出现频率更高；空槽 = 回能量 */
-  offense: Slot[];
-  /** 防守槽，长度 DEFENSE_SLOTS。被攻击时按槽位权重随机抽一个应对 */
-  defense: Slot[];
-}
-
-export type AiStyle = 'pressure' | 'outboxer' | 'wall' | 'manual';
+export type AiStyle = 'manual' | 'aggressive' | 'defensive' | 'balanced';
 
 export interface FighterDef {
   id: string;
   name: string;
   /** 渲染用主色 */
   color: number;
-  /** 一句话人设，选对手界面显示 */
   tagline: string;
   stats: Stats;
+  /** 健康度 0..1，进入 HP 公式 */
+  health: number;
   style: AiStyle;
-  /** 可用招式池（招式 id） */
+  /** 可用技能池 */
   pool: string[];
-  /** 初始配槽 */
+  /** 初始装备的技能 */
   loadout: Loadout;
+  /** 属性/技能的出处，界面上会显示 */
+  sourceUrl?: string;
+  sourceNote?: string;
 }
 
 export interface FighterState {
@@ -109,12 +121,8 @@ export interface FighterState {
   derived: Derived;
   hp: number;
   energy: number;
-  /** 进攻槽游标，跨回合延续 */
-  offCursor: number;
-  /** 下个动作作废（被震慑） */
-  stunned: boolean;
-  /** 下个动作作废（被击倒爬起） */
-  knockedDown: boolean;
+  /** 被击倒后要跳过的阶段数 */
+  lostPhases: number;
   loadout: Loadout;
 }
 
@@ -131,17 +139,15 @@ export interface FightState {
   round: number;
   player: FighterState;
   opponent: FighterState;
-  /** 当前攻方 */
-  turn: Side;
-  /** 当前攻方还剩几个连续动作 */
-  turnActionsLeft: number;
+  /** 当前进攻方 */
+  attacker: Side;
   /** 可序列化的 RNG 状态，保证同 seed 同结果 */
   rng: number;
   over: boolean;
   result: FightResult | null;
 }
 
-/** 每个事件都带一份双方血量/能量快照，HUD 据此与画面同步 */
+/** 每个事件都带一份双方血量/体力快照，HUD 据此与画面同步 */
 export interface EventSnapshot {
   hp: Record<Side, number>;
   energy: Record<Side, number>;
@@ -155,12 +161,7 @@ interface Base extends EventSnapshot {
 }
 
 export type RoundEvent =
-  | (Base & { type: 'round_start'; round: number; regen: Record<Side, number> })
-  | (Base & { type: 'turn_switch'; side: Side; actions: number })
-  | (Base & { type: 'empty_slot'; side: Side; energyGain: number })
-  | (Base & { type: 'rest'; side: Side; move: string; energyGain: number })
-  | (Base & { type: 'exhausted'; side: Side; energyGain: number })
-  | (Base & { type: 'skip'; side: Side; cause: 'stun' | 'knockdown' })
+  | (Base & { type: 'round_start'; round: number })
   | (Base & { type: 'attack'; side: Side; move: string; defenseMove: string | null })
   | (Base & { type: 'dodge'; side: Side; move: string })
   | (Base & { type: 'miss'; side: Side; move: string })
@@ -170,13 +171,12 @@ export type RoundEvent =
       target: Side;
       move: string;
       damage: number;
-      crit: boolean;
       blocked: number;
-      /** 守方能量见底时的额外惩罚伤害 */
+      /** 守方体力见底时的额外惩罚伤害 */
       exhaustBonus: boolean;
     })
-  | (Base & { type: 'counter'; side: Side; target: Side; damage: number })
-  | (Base & { type: 'stun'; side: Side })
+  | (Base & { type: 'exhausted'; side: Side; energyGain: number })
+  | (Base & { type: 'skip'; side: Side })
   | (Base & { type: 'knockdown'; side: Side })
   | (Base & { type: 'ko'; side: Side })
   | (Base & { type: 'round_end'; round: number });

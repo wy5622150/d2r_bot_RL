@@ -1,11 +1,12 @@
-import { getMove, tryGetMove } from './moves';
+import { getMove } from './moves';
 import type { Rng } from './rng';
-import { CRIT_MULT, EXHAUST_BONUS_DAMAGE, MAX_DODGE, MIN_DAMAGE } from './stats';
+import { EXHAUST_BONUS_DAMAGE, evalAccuracy, evalFormula } from './stats';
 import type { FighterState, Move, RoundEvent, Side } from './types';
+import { UNK } from './unknowns';
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
-/** 事件里的 hp/energy 快照与 tick 由 engine 统一补齐，调用方只写业务字段 */
+/** 事件里的 hp/energy 快照与 tick 由 engine 统一补齐 */
 export type EventInput = DistributiveOmit<RoundEvent, 'hp' | 'energy' | 'tick'>;
 export type Emit = (e: EventInput) => void;
 
@@ -18,34 +19,45 @@ export interface ResolveCtx {
   emit: Emit;
 }
 
-/**
- * 从防守槽里抽一个防守招式。
- * 空槽也参与抽取 —— 防守槽留空 = 有一定概率完全不设防，这是原作的取舍。
- * 抽中但能量不够 → 防守失败，同样算不设防。
- */
-export function pickDefense(defender: FighterState, rng: Rng): Move | null {
-  const slots = defender.loadout.defense;
-  if (slots.length === 0) return null;
-  const picked = slots[rng.int(slots.length)];
-  const move = tryGetMove(picked ?? null);
-  if (!move) return null;
-  if (defender.energy < move.energyCost) return null;
-  return move;
+/** 技能对该选手的实际体力消耗（原版：base + 系数 × STR） */
+export function costOf(move: Move, f: FighterState): number {
+  return evalFormula(move.energyCost, f.def.stats.str);
 }
 
-/** 结算一次攻击。会直接修改 attacker / defender 的状态，并通过 emit 吐出事件。 */
+function equipped(f: FighterState, kind: Move['kind']): Move[] {
+  return f.loadout.map(getMove).filter((m) => m.kind === kind);
+}
+
+/**
+ * 攻击阶段抽一个攻击技能。
+ * 一代是一组共享技能槽、随机出招，开发者明确说槽位顺序无意义 —— 所以这里是等概率抽取，
+ * 没有游标、没有顺序。装了几个同名技能就等比例提高它出现的概率。
+ */
+export function pickAttack(f: FighterState, rng: Rng): Move | null {
+  const affordable = equipped(f, 'attack').filter((m) => f.energy >= costOf(m, f));
+  if (affordable.length === 0) return null;
+  return rng.pick(affordable);
+}
+
+/** 防守阶段抽一个防守技能；抽中但体力不足则防守失败 */
+export function pickDefense(f: FighterState, rng: Rng): Move | null {
+  const defenses = equipped(f, 'defense');
+  if (defenses.length === 0) return null;
+  const picked = rng.pick(defenses);
+  if (UNK.defenseFailsWhenBroke && f.energy < costOf(picked, f)) return null;
+  return picked;
+}
+
+/** 结算一次攻击。直接修改双方状态，并通过 emit 吐出事件。 */
 export function resolveAttack(ctx: ResolveCtx, moveId: string): void {
   const { attacker, defender, attackerSide, defenderSide, rng, emit } = ctx;
   const move = getMove(moveId);
 
-  attacker.energy = Math.max(0, attacker.energy - move.energyCost);
+  attacker.energy = Math.max(0, attacker.energy - costOf(move, attacker));
 
   const defMove = pickDefense(defender, rng);
   if (defMove) {
-    defender.energy = Math.max(0, defender.energy - defMove.energyCost);
-    if (defMove.energyRestore) {
-      defender.energy = Math.min(defender.derived.maxEnergy, defender.energy + defMove.energyRestore);
-    }
+    defender.energy = Math.max(0, defender.energy - costOf(defMove, defender));
   }
 
   emit({
@@ -53,48 +65,54 @@ export function resolveAttack(ctx: ResolveCtx, moveId: string): void {
     side: attackerSide,
     move: move.id,
     defenseMove: defMove?.id ?? null,
-    text: `${attacker.def.name} 打出${move.name}${defMove ? `，${defender.def.name} 用${defMove.name}应对` : ''}`,
+    text: `${attacker.def.name} 打出 ${move.nameEn}${
+      defMove ? `，${defender.def.name} 用 ${defMove.nameEn} 应对` : ''
+    }`,
   });
 
-  // 受击瞬间体力见底 → 额外惩罚伤害并被击倒（原作机制）
+  // 受击瞬间体力见底 → 额外 +10 伤害并被击倒（原版已确证）
   const exhausted = defender.energy <= 0;
 
-  // 1) 闪避
-  if (defMove?.dodge) {
-    // 留 15% 的兜底命中，再灵活的选手也不该完全无法被击中
-    const p = Math.min(MAX_DODGE, defMove.dodge + defender.derived.dodgeBonus);
-    if (rng.chance(p)) {
+  // 1) 闪避：成功则完全免伤（原版已确证；闪避率公式未公开，取自 unknowns.ts）
+  if (defMove?.defenseKind === 'dodge') {
+    if (rng.chance(UNK.dodgeChance(defender.derived.acc))) {
       emit({
         type: 'dodge',
         side: defenderSide,
         move: defMove.id,
-        text: `${defender.def.name} 一个侧身，${move.name}擦着头皮过去了`,
+        text: `${defender.def.name} 闪开了 ${move.nameEn}`,
       });
       return;
     }
   }
 
-  // 2) 命中
-  if (!rng.chance(move.accuracy ?? 1)) {
+  // 2) 命中：accuracy = base + perAcc × ACC（原版已确证）
+  const hitChance = move.accuracy ? evalAccuracy(move.accuracy, attacker.derived.acc) : 1;
+  if (!rng.chance(hitChance)) {
     emit({
       type: 'miss',
       side: attackerSide,
       move: move.id,
-      text: `${attacker.def.name} 的${move.name}打空了`,
+      text: `${attacker.def.name} 的 ${move.nameEn} 打空了`,
     });
     return;
   }
 
-  // 3) 伤害
-  const crit = rng.chance(attacker.derived.critChance);
-  const raw = Math.round((move.baseDamage ?? 0) * attacker.derived.damageMult * (crit ? CRIT_MULT : 1));
-  // 先按百分比减伤，再扣固定护甲：百分比让大小拳同比例受影响，护甲专门惩罚小拳
-  const afterBlock = Math.max(
-    MIN_DAMAGE,
-    Math.round(raw * (1 - (defMove?.blockPct ?? 0))) - defender.derived.armor,
-  );
-  const blocked = raw - afterBlock;
-  const damage = afterBlock + (exhausted ? EXHAUST_BONUS_DAMAGE : 0);
+  // 3) 伤害：base + 系数 × STR，四舍五入（原版已确证）
+  const raw = Math.round(evalFormula(move.damage ?? { base: 0, perStr: 0 }, attacker.def.stats.str));
+
+  // 格挡减伤（减伤量与成功率未公开，取自 unknowns.ts）
+  const blocking = defMove?.defenseKind === 'block' && rng.chance(UNK.blockSuccessChance);
+  const afterBlock = blocking ? raw * (1 - UNK.blockReduction) : raw;
+
+  // 护甲 ARM = STM×1.3。相减还是按比例，wiki 没有确认 —— 见 unknowns.ts 的 armorMode
+  const armed =
+    UNK.armorMode === 'percent'
+      ? afterBlock * (1 - defender.derived.arm / 100)
+      : afterBlock - defender.derived.arm;
+  const landed = Math.max(UNK.minDamage, Math.round(armed));
+  const damage = landed + (exhausted ? EXHAUST_BONUS_DAMAGE : 0);
+  const blocked = raw - landed;
 
   defender.hp = Math.max(0, defender.hp - damage);
 
@@ -104,45 +122,20 @@ export function resolveAttack(ctx: ResolveCtx, moveId: string): void {
     target: defenderSide,
     move: move.id,
     damage,
-    crit,
     blocked,
     exhaustBonus: exhausted,
-    text: `${move.name}命中，${damage} 点伤害${crit ? '（暴击！）' : ''}${
-      exhausted ? '——对手体力见底，这一拳格外沉' : blocked > 0 ? `（挡下 ${blocked}）` : ''
+    text: `${move.nameEn} 命中，${damage} 点伤害${
+      exhausted ? '——对手体力见底，额外挨了 10 点' : blocked > 0 ? `（挡下 ${blocked}）` : ''
     }`,
   });
 
-  // 4) 反击
-  if (defMove?.counter && blocked > 0 && defender.hp > 0) {
-    const cdmg = Math.max(MIN_DAMAGE, Math.round(blocked * defMove.counter));
-    attacker.hp = Math.max(0, attacker.hp - cdmg);
-    emit({
-      type: 'counter',
-      side: defenderSide,
-      target: attackerSide,
-      damage: cdmg,
-      text: `${defender.def.name} 顺势反击，回敬 ${cdmg} 点`,
-    });
-  }
-
-  // 5) 抽体力
-  if (move.energyDrain) {
-    defender.energy = Math.max(0, defender.energy - move.energyDrain);
-  }
-
-  // 6) 震慑
-  if (move.stunChance && defender.hp > 0 && rng.chance(move.stunChance)) {
-    defender.stunned = true;
-    emit({
-      type: 'stun',
-      side: defenderSide,
-      text: `${defender.def.name} 被打懵了，下一拍出不了手`,
-    });
-  }
-
-  // 7) 体力归零 → 倒地（KO 判定统一由 engine 在动作结束后做）
+  // 4) 体力归零 → 被击倒（KO 判定统一由 engine 在阶段结束后做）
   if (exhausted && defender.hp > 0) {
-    defender.knockedDown = true;
+    defender.lostPhases += UNK.knockdownLostPhases;
+    defender.energy = Math.min(
+      defender.derived.maxEnergy,
+      defender.energy + UNK.knockdownGetUpEnergy,
+    );
     emit({
       type: 'knockdown',
       side: defenderSide,

@@ -2,3 +2,8 @@ node_modules/
 dist/
 *.local
 .DS_Store
+
+# 仓库根目录的 .gitignore 有一条 data/（给 D2R 的训练数据用的），
+# 会连带忽略掉本子项目的 data/ —— 那里放的是原版资料转录，必须入库。
+!data/
+!data/**

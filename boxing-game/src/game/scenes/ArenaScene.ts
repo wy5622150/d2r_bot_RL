@@ -187,9 +187,6 @@ export class ArenaScene extends Phaser.Scene {
         this.showBanner(`第 ${e.round} 回合`);
         return 900;
 
-      case 'turn_switch':
-        return 260;
-
       case 'attack': {
         const attacker = b[e.side];
         const defender = b[e.side === 'player' ? 'opponent' : 'player'];
@@ -201,21 +198,11 @@ export class ArenaScene extends Phaser.Scene {
       case 'hit': {
         const target = b[e.target];
         target.hurt(e.damage, spd);
-        this.floatText(
-          e.target,
-          `-${e.damage}`,
-          e.crit ? '#ff5252' : '#ffffff',
-          e.crit ? 32 : 24,
-        );
-        if (e.crit || e.exhaustBonus) this.cameras.main.shake(180 / spd, 0.009);
+        this.floatText(e.target, `-${e.damage}`, e.exhaustBonus ? '#ff5252' : '#ffffff', e.exhaustBonus ? 30 : 24);
+        if (e.exhaustBonus) this.cameras.main.shake(180 / spd, 0.009);
         if (e.blocked > 0 && !e.exhaustBonus) this.floatText(e.target, `挡下 ${e.blocked}`, '#8fd3ff', 15, 40);
         return 320;
       }
-
-      case 'counter':
-        b[e.target].hurt(e.damage, spd);
-        this.floatText(e.target, `反击 -${e.damage}`, '#ffd166', 22);
-        return 300;
 
       case 'dodge':
         this.floatText(e.side, '闪开', '#8fd3ff', 20);
@@ -226,20 +213,15 @@ export class ArenaScene extends Phaser.Scene {
         this.floatText(e.side, '打空', '#9aa4b2', 20);
         return 260;
 
-      case 'rest':
-      case 'empty_slot':
-        b[e.side].breathe(spd);
-        if (e.energyGain > 0) this.floatText(e.side, `+${e.energyGain} 体力`, '#ffd166', 18);
-        return 320;
-
       case 'exhausted':
-        b[e.side].stumble(spd);
-        this.floatText(e.side, '力竭', '#ff9f43', 20);
+        b[e.side].breathe(spd);
+        this.floatText(
+          e.side,
+          e.energyGain > 0 ? `喘气 +${Math.round(e.energyGain)}` : '体力见底',
+          '#ff9f43',
+          19,
+        );
         return 320;
-
-      case 'stun':
-        this.floatText(e.side, '被打懵', '#ff8fab', 20);
-        return 280;
 
       case 'knockdown':
         b[e.side].fall(spd);
@@ -248,8 +230,8 @@ export class ArenaScene extends Phaser.Scene {
         return 700;
 
       case 'skip':
-        if (e.cause === 'knockdown') b[e.side].standUp(spd);
-        this.floatText(e.side, e.cause === 'knockdown' ? '爬起来' : '还没缓过来', '#9aa4b2', 18);
+        b[e.side].standUp(spd);
+        this.floatText(e.side, '爬起来', '#9aa4b2', 18);
         return 380;
 
       case 'ko':

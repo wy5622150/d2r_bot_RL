@@ -1,127 +1,125 @@
 import { describe, expect, it } from 'vitest';
+import { validateLoadout } from '../ai';
 import { createFight, simulateFight, simulateRound } from '../engine';
 import { OPPONENTS, PLAYER } from '../fighters';
-import { ACTIONS_PER_ROUND, EMPTY_SLOT_ENERGY, ROUNDS } from '../stats';
+import { playFullFight } from '../match';
+import { ABILITY_SLOTS_MAX, MAX_ROUNDS } from '../stats';
 import type { RoundEvent, Side } from '../types';
-import { defOf, IDLE_LOADOUT, loadoutOf } from './helpers';
+import { UNK } from '../unknowns';
+import { defOf } from './helpers';
 
-const carl = OPPONENTS[0]!;
+const silver = OPPONENTS[0]!;
+const bobo = OPPONENTS[1]!;
 
-function countActions(events: RoundEvent[], side: Side): number {
+function phasesOf(events: RoundEvent[], side: Side): number {
   return events.filter(
-    (e) =>
-      (e.type === 'attack' ||
-        e.type === 'rest' ||
-        e.type === 'empty_slot' ||
-        e.type === 'exhausted' ||
-        e.type === 'skip') &&
-      e.side === side,
+    (e) => (e.type === 'attack' || e.type === 'exhausted' || e.type === 'skip') && e.side === side,
   ).length;
 }
 
 describe('确定性', () => {
-  it('同 seed 同配槽 → 事件流逐条相等', () => {
-    const a = simulateFight(createFight(PLAYER, carl, 12345));
-    const b = simulateFight(createFight(PLAYER, carl, 12345));
+  it('同 seed 同配置 → 事件流逐条相等', () => {
+    const a = playFullFight(PLAYER, bobo, 12345);
+    const b = playFullFight(PLAYER, bobo, 12345);
     expect(JSON.stringify(a.rounds)).toBe(JSON.stringify(b.rounds));
     expect(a.state.result).toEqual(b.state.result);
   });
 
   it('不同 seed → 战报不同', () => {
-    const a = simulateFight(createFight(PLAYER, carl, 1));
-    const b = simulateFight(createFight(PLAYER, carl, 999));
+    const a = playFullFight(PLAYER, bobo, 1);
+    const b = playFullFight(PLAYER, bobo, 999);
     expect(JSON.stringify(a.rounds)).not.toBe(JSON.stringify(b.rounds));
   });
 });
 
-describe('先手值 initiative', () => {
-  it('4 vs 2 时动作数正好是 2:1', () => {
-    // 双方全空槽 → 不会掉血提前 KO，纯看动作分配
-    const fast = defOf('fast', { str: 5, agi: 6, sta: 5 }, IDLE_LOADOUT); // initiative 4
-    const slow = defOf('slow', { str: 5, agi: 1, sta: 5 }, IDLE_LOADOUT); // initiative 2
-    const { rounds } = simulateFight(createFight(fast, slow, 7));
-    const all = rounds.flat();
-    expect(countActions(all, 'player')).toBe(ROUNDS * ACTIONS_PER_ROUND * (2 / 3));
-    expect(countActions(all, 'opponent')).toBe(ROUNDS * ACTIONS_PER_ROUND * (1 / 3));
+describe('回合结构', () => {
+  it('双方严格交替出手，没有先手值这回事', () => {
+    const { events } = simulateRound(createFight(PLAYER, silver, 7));
+    const sides = events
+      .filter((e) => e.type === 'attack' || e.type === 'exhausted' || e.type === 'skip')
+      .map((e) => (e.type === 'attack' || e.type === 'exhausted' || e.type === 'skip' ? e.side : ''));
+    expect(sides.length).toBe(UNK.phasesPerRound);
+    for (let i = 1; i < sides.length; i++) expect(sides[i]).not.toBe(sides[i - 1]);
   });
 
-  it('先手值高的一方先出手', () => {
-    const slowPlayer = defOf('p', { str: 5, agi: 1, sta: 5 }, IDLE_LOADOUT);
-    const fastFoe = defOf('o', { str: 5, agi: 9, sta: 5 }, IDLE_LOADOUT);
-    const { events } = simulateRound(createFight(slowPlayer, fastFoe, 3));
-    const first = events.find((e) => e.type === 'empty_slot');
-    expect(first && 'side' in first ? first.side : null).toBe('opponent');
-  });
-});
-
-describe('进攻槽', () => {
-  it('空槽会回复能量并产生 empty_slot 事件', () => {
-    const def = defOf('p', { str: 5, agi: 5, sta: 5 }, loadoutOf([null, null, null, null], []));
-    const foe = defOf('o', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    const start = createFight(def, foe, 42);
-    start.player.energy = 10; // 留出回能空间
-    const { events, state } = simulateRound(start);
-    const empties = events.filter((e) => e.type === 'empty_slot' && e.side === 'player');
-    expect(empties.length).toBeGreaterThan(0);
-    expect(state.player.energy).toBeGreaterThan(10);
-    expect(empties[0]).toMatchObject({ energyGain: EMPTY_SLOT_ENERGY });
+  it('一个回合的阶段数在双方之间平分', () => {
+    const { events } = simulateRound(createFight(PLAYER, silver, 11));
+    expect(phasesOf(events, 'player') + phasesOf(events, 'opponent')).toBe(UNK.phasesPerRound);
   });
 
-  it('出招游标跨回合延续（不会每回合从第一个槽重来）', () => {
-    const def = defOf('p', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    const foe = defOf('o', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    let state = createFight(def, foe, 5);
-    const r1 = simulateRound(state);
-    const afterR1 = r1.state.player.offCursor;
-    expect(afterR1).toBe(countActions(r1.events, 'player'));
-    state = r1.state;
-    const r2 = simulateRound(state);
-    expect(r2.state.player.offCursor).toBe(afterR1 + countActions(r2.events, 'player'));
-  });
-
-  it('能量不足时踉跄，不会打出招式', () => {
-    const def = defOf('p', { str: 5, agi: 5, sta: 5 }, loadoutOf(['haymaker'], [null, null, null]));
-    const foe = defOf('o', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    const start = createFight(def, foe, 11);
-    start.player.energy = 1;
-    const { events } = simulateRound(start);
-    expect(events.some((e) => e.type === 'exhausted' && e.side === 'player')).toBe(true);
+  it('最多打 20 个回合', () => {
+    // 双方都没有攻击技能 → 谁也打不死谁，必然走到读分
+    const pacifist = defOf('a', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
+    const pacifist2 = defOf('b', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
+    const { rounds, state } = simulateFight(createFight(pacifist, pacifist2, 5));
+    expect(rounds.length).toBe(MAX_ROUNDS);
+    expect(state.round).toBe(MAX_ROUNDS);
+    expect(state.result?.method).toBe('decision');
   });
 });
 
 describe('结束条件', () => {
-  it('KO 后立即结束，不再产生后续动作事件', () => {
-    const start = createFight(PLAYER, carl, 2024);
-    start.opponent.hp = 3;
+  it('KO 后立即结束，之后只剩一个 round_end', () => {
+    const start = createFight(PLAYER, bobo, 2024);
+    start.opponent.hp = 1;
     const { events, state } = simulateRound(start);
     expect(state.over).toBe(true);
     expect(state.result?.method).toBe('ko');
+    expect(state.result?.winner).toBe('player');
     const koIdx = events.findIndex((e) => e.type === 'ko');
     expect(koIdx).toBeGreaterThanOrEqual(0);
-    // KO 之后只允许有一个 round_end
     expect(events.slice(koIdx + 1).map((e) => e.type)).toEqual(['round_end']);
   });
 
-  it('打满三回合按剩余血量百分比读分', () => {
-    const a = defOf('p', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    const b = defOf('o', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
+  it('打满 20 回合按剩余血量百分比读分', () => {
+    const a = defOf('a', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
+    const b = defOf('b', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
     const start = createFight(a, b, 8);
     start.opponent.hp = start.opponent.derived.maxHp / 2;
     const { state } = simulateFight(start);
-    expect(state.result).toEqual({ winner: 'player', method: 'decision', round: ROUNDS });
+    expect(state.result).toEqual({ winner: 'player', method: 'decision', round: MAX_ROUNDS });
   });
 
   it('血量百分比相同 → 平局', () => {
-    const a = defOf('p', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
-    const b = defOf('o', { str: 5, agi: 5, sta: 5 }, IDLE_LOADOUT);
+    const a = defOf('a', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
+    const b = defOf('b', { str: 5, agi: 5, stm: 5 }, ['block', 'dodge']);
     const { state } = simulateFight(createFight(a, b, 8));
-    expect(state.result).toEqual({ winner: null, method: 'decision', round: ROUNDS });
+    expect(state.result).toEqual({ winner: null, method: 'decision', round: MAX_ROUNDS });
+  });
+});
+
+describe('体力耗尽', () => {
+  it('打不出任何已装备的攻击技能时，该阶段只能喘气回体力', () => {
+    const start = createFight(PLAYER, silver, 42);
+    start.player.energy = 0;
+    const { events } = simulateRound(start);
+    const gasp = events.find((e) => e.type === 'exhausted' && e.side === 'player');
+    expect(gasp).toBeDefined();
+    expect(gasp && gasp.type === 'exhausted' ? gasp.energyGain : 0).toBeGreaterThan(0);
+  });
+});
+
+describe('技能配置校验', () => {
+  it('必须正好装备 5 个技能（一代不允许留空）', () => {
+    expect(validateLoadout(['punch', 'block'], PLAYER.pool)).toContain(`${ABILITY_SLOTS_MAX}`);
+    expect(validateLoadout(PLAYER.loadout, PLAYER.pool)).toBeNull();
+  });
+
+  it('至少要带一个攻击技能', () => {
+    const allDefense = ['block', 'dodge', 'block', 'dodge', 'block'];
+    expect(validateLoadout(allDefense, PLAYER.pool)).toContain('攻击技能');
+  });
+
+  it('不能带池子外的技能', () => {
+    expect(validateLoadout(['punch', 'punch', 'punch', 'punch', 'nope'], PLAYER.pool)).toContain(
+      'nope',
+    );
   });
 });
 
 describe('事件快照', () => {
-  it('每个事件都带双方血量/体力快照，且与最终状态吻合', () => {
-    const { rounds, state } = simulateFight(createFight(PLAYER, carl, 777));
+  it('每个事件都带双方血量/体力快照，末条与最终状态一致', () => {
+    const { rounds, state } = playFullFight(PLAYER, bobo, 777);
     const all = rounds.flat();
     expect(all.length).toBeGreaterThan(0);
     for (const e of all) {

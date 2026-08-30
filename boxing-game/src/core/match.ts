@@ -1,12 +1,12 @@
 import { aiReconfigure } from './ai';
 import { applyLoadout, createFight, simulateRound } from './engine';
 import { createRng } from './rng';
-import { ROUNDS } from './stats';
+import { MAX_ROUNDS } from './stats';
 import type { FighterDef, FightState, Loadout, RoundEvent } from './types';
 
 /**
  * 一场比赛的推进逻辑：界面和 headless 批量模拟共用这一份。
- * 每个回合开始前，对手按自己的风格重新配槽（玩家那边由界面负责）。
+ * 每个回合开始前，对手按自己的风格重新选技能（玩家那边由界面负责）。
  */
 export function advanceRound(state: FightState): { events: RoundEvent[]; state: FightState } {
   if (state.over) return { events: [], state };
@@ -26,7 +26,7 @@ export interface MatchLog {
   state: FightState;
 }
 
-/** 一路打到分出结果（对手全程自动配槽，玩家沿用同一套配槽）。 */
+/** 一路打到分出结果（对手全程自动换技能，玩家沿用同一套配置）。 */
 export function playFullFight(
   playerDef: FighterDef,
   opponentDef: FighterDef,
@@ -36,7 +36,7 @@ export function playFullFight(
   let state = createFight(playerDef, opponentDef, seed, playerLoadout);
   const rounds: RoundEvent[][] = [];
   let guard = 0;
-  while (!state.over && guard++ < ROUNDS + 2) {
+  while (!state.over && guard++ < MAX_ROUNDS + 2) {
     const r = advanceRound(state);
     rounds.push(r.events);
     state = r.state;

@@ -1,33 +1,43 @@
-import type { Move } from '../../core/types';
+import { accuracyText, evalAccuracy, evalFormula, formulaText } from '../../core/stats';
+import type { Derived, Move, Stats } from '../../core/types';
 
 const KIND_LABEL: Record<Move['kind'], string> = {
-  attack: '进攻',
+  attack: '攻击',
   defense: '防守',
-  rest: '休整',
 };
 
-/** 把一个招式的关键数字摊开成人话 */
-export function moveStats(move: Move): string[] {
-  const out: string[] = [`体力 ${move.energyCost}`];
-  if (move.baseDamage) out.push(`伤害 ${move.baseDamage}`);
-  if (move.accuracy !== undefined) out.push(`命中 ${Math.round(move.accuracy * 100)}%`);
-  if (move.blockPct) out.push(`减伤 ${Math.round(move.blockPct * 100)}%`);
-  if (move.dodge) out.push(`闪避 ${Math.round(move.dodge * 100)}%`);
-  if (move.counter) out.push(`反击 ${Math.round(move.counter * 100)}%`);
-  if (move.energyDrain) out.push(`抽体力 ${move.energyDrain}`);
-  if (move.energyRestore) out.push(`回体力 ${move.energyRestore}`);
-  if (move.stunChance) out.push(`震慑 ${Math.round(move.stunChance * 100)}%`);
+/** 原版写法：`1+0.7(str)` / `70+20(Hit%)` —— 直接显示公式本身，不藏起来 */
+export function rawFormulas(move: Move): string[] {
+  const out: string[] = [`体力 ${formulaText(move.energyCost)}`];
+  if (move.damage) out.push(`伤害 ${formulaText(move.damage)}`);
+  if (move.accuracy) out.push(`命中 ${accuracyText(move.accuracy)}`);
   return out;
+}
+
+/** 代入这名选手的属性后的实际数字 */
+export function actualNumbers(move: Move, stats: Stats, derived: Derived): string[] {
+  const out: string[] = [`体力 ${round1(evalFormula(move.energyCost, stats.str))}`];
+  if (move.damage) out.push(`伤害 ${Math.round(evalFormula(move.damage, stats.str))}`);
+  if (move.accuracy) out.push(`命中 ${Math.round(evalAccuracy(move.accuracy, derived.acc) * 100)}%`);
+  if (move.defenseKind === 'dodge') out.push('成功则完全免伤');
+  if (move.defenseKind === 'block') out.push('成功则减伤');
+  return out;
+}
+
+function round1(n: number): number {
+  return Math.round(n * 10) / 10;
 }
 
 interface Props {
   move: Move;
+  stats: Stats;
+  derived: Derived;
   selected?: boolean;
   disabled?: boolean;
   onClick?: () => void;
 }
 
-export function MoveCard({ move, selected, disabled, onClick }: Props) {
+export function MoveCard({ move, stats, derived, selected, disabled, onClick }: Props) {
   return (
     <button
       type="button"
@@ -36,15 +46,18 @@ export function MoveCard({ move, selected, disabled, onClick }: Props) {
       onClick={onClick}
     >
       <div className="movecard__top">
-        <span className="movecard__name">{move.name}</span>
-        <span className="movecard__kind">{KIND_LABEL[move.kind]}</span>
+        <span className="movecard__name">{move.nameEn}</span>
+        <span className="movecard__kind">
+          {move.school} · {KIND_LABEL[move.kind]}
+        </span>
       </div>
       <div className="movecard__stats">
-        {moveStats(move).map((s) => (
+        {actualNumbers(move, stats, derived).map((s) => (
           <span key={s}>{s}</span>
         ))}
       </div>
-      <p className="movecard__desc">{move.desc}</p>
+      <p className="movecard__desc">{move.effects.join(' ') || move.nameZhUnofficial}</p>
+      <p className="movecard__raw">原版公式：{rawFormulas(move).join('　')}</p>
     </button>
   );
 }

@@ -3,13 +3,16 @@ import type { AnimKey } from '../../core/types';
 
 /** 出拳动作的表现参数：幅度越大的拳，前摇越长、身体前压越多 */
 const PUNCH_SHAPE: Record<string, { reach: number; lunge: number; windup: number; arc: number }> = {
-  jab: { reach: 58, lunge: 10, windup: 60, arc: 0 },
-  cross: { reach: 66, lunge: 16, windup: 90, arc: -4 },
-  bodyshot: { reach: 56, lunge: 14, windup: 80, arc: 18 },
-  hook: { reach: 60, lunge: 18, windup: 110, arc: -10 },
-  overhand: { reach: 64, lunge: 22, windup: 130, arc: -22 },
+  punch: { reach: 58, lunge: 10, windup: 60, arc: 0 },
+  high_punch: { reach: 64, lunge: 16, windup: 95, arc: -12 },
   uppercut: { reach: 52, lunge: 18, windup: 120, arc: -26 },
-  haymaker: { reach: 72, lunge: 28, windup: 170, arc: -30 },
+  crosspunch: { reach: 68, lunge: 20, windup: 110, arc: -6 },
+  backhand: { reach: 66, lunge: 18, windup: 130, arc: -18 },
+  kick: { reach: 62, lunge: 14, windup: 90, arc: 22 },
+  high_kick: { reach: 70, lunge: 20, windup: 140, arc: -16 },
+  low_kick: { reach: 58, lunge: 12, windup: 80, arc: 34 },
+  knee: { reach: 46, lunge: 16, windup: 90, arc: 12 },
+  chop: { reach: 60, lunge: 16, windup: 100, arc: -8 },
 };
 
 function shade(color: number, factor: number): number {
@@ -96,7 +99,7 @@ export class BoxerView {
 
   /** 出拳。onImpact 在拳头到位的那一刻触发，用来同步受击表现。 */
   punch(anim: AnimKey, speed: number, onImpact: () => void): number {
-    const s = PUNCH_SHAPE[anim] ?? PUNCH_SHAPE['cross']!;
+    const s = PUNCH_SHAPE[anim] ?? PUNCH_SHAPE['punch']!;
     const windup = s.windup / speed;
     const strike = 90 / speed;
 
@@ -151,7 +154,7 @@ export class BoxerView {
   defend(anim: AnimKey, speed: number): void {
     if (this.down) return;
     const d = 140 / speed;
-    if (anim === 'slip') {
+    if (anim === 'dodge') {
       this.scene.tweens.add({
         targets: this.body,
         x: -this.facing * 16,
@@ -162,11 +165,11 @@ export class BoxerView {
       });
       return;
     }
-    // guard / clinch / parry：双手护到面门前
-    const up = anim === 'clinch' ? 6 : 14;
+    // Block：双手护到面门前
+    const up = 14;
     this.scene.tweens.add({
       targets: [this.frontGlove, this.backGlove],
-      x: this.facing * (anim === 'clinch' ? 10 : 16),
+      x: this.facing * 16,
       y: `-=${up}`,
       duration: d,
       yoyo: true,

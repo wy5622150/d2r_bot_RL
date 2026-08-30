@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { PLAYER } from '../../core/fighters';
-import { ROUNDS } from '../../core/stats';
+import { MAX_ROUNDS } from '../../core/stats';
 import type { RoundEvent } from '../../core/types';
 import { busState, EventBus } from '../../game/EventBus';
 import { PhaserGame } from '../../game/PhaserGame';
@@ -71,7 +71,7 @@ export function FightScreen() {
       <div className="fight__hud">
         <StatBar label={PLAYER.name} value={hud.hp.player} max={fight.player.derived.maxHp} tone="hp" />
         <div className="fight__round">
-          第 {round} / {ROUNDS} 回合
+          第 {round} / {MAX_ROUNDS} 回合
         </div>
         <StatBar
           label={fight.opponent.def.name}
@@ -120,9 +120,9 @@ export function FightScreen() {
         {phase === 'between' && (
           <div className="overlay">
             <div className="overlay__panel">
-              <h2>第 {round} 回合结束 —— 重新配槽</h2>
+              <h2>第 {round} 回合结束 —— 重新选技能</h2>
               <p className="muted">
-                对手也会在回合之间改自己的配置。看看刚才是被什么打疼的，再决定下一回合怎么打。
+                对手也会在回合之间换自己的技能。看看刚才是被什么打疼的，再决定下一回合带什么。
               </p>
               <LoadoutEditor compact />
               <button type="button" className="btn btn--primary btn--wide" onClick={playNextRound}>

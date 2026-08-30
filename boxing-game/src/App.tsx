@@ -12,7 +12,7 @@ export default function App() {
     <div className="app">
       <header className="app__head">
         <h1>拳击俱乐部 · 战斗</h1>
-        <span className="muted">配槽 → 自动对打 → 回合间再配槽</span>
+        <span className="muted">选 5 个技能 → 自动对打 → 回合间重选</span>
       </header>
 
       {screen === 'select' && <OpponentSelect />}
