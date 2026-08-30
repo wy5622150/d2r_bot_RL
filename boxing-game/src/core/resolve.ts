@@ -109,7 +109,9 @@ export function resolveAttack(ctx: ResolveCtx, moveId: string): void {
   const armed =
     UNK.armorMode === 'percent'
       ? afterBlock * (1 - defender.derived.arm / 100)
-      : afterBlock - defender.derived.arm;
+      : UNK.armorMode === 'capped'
+        ? afterBlock - Math.min(defender.derived.arm, afterBlock * UNK.armorCapRatio)
+        : afterBlock - defender.derived.arm;
   const landed = Math.max(UNK.minDamage, Math.round(armed));
   const damage = landed + (exhausted ? EXHAUST_BONUS_DAMAGE : 0);
   const blocked = raw - landed;

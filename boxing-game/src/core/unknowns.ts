@@ -108,12 +108,20 @@ export const UNKNOWNS = {
    * 这是目前对战斗手感影响最大的一个未知项 —— 见下面 why 里的实测数据。
    */
   armorMode: u(
-    'subtract' as 'subtract' | 'percent',
+    'subtract' as 'subtract' | 'percent' | 'capped',
     'ARM = STM×1.3 是已确证的属性公式，但 wiki 对它「直接相减」的行为**明确标注为初步判断**（tentative），并未确认。',
-    '默认取 wiki 字面所说的直接相减 —— 在拿到确凿证据前不擅自改默认值。但两种读法都不像真实游戏，实测（各 600 场）：\n' +
-      '  subtract：KO 率 0%，每一场都拖到 20 回合读分。原因是 5/5/5 时 Punch 原始伤害 5、对手 ARM 6.5，相减后触发下限只剩 1 点，而血量有 203。\n' +
-      '  percent（按 1 − ARM/100 折算）：KO 率 100%，平均 11.6~15.6 回合结束。\n' +
-      '真实的一代两种结局都常见，说明真正的公式在这两者之间 —— 可能护甲有上限、或伤害另有加成、或血量口径不同。这是目前最值得优先查证的一项。',
+    '默认取 wiki 字面所说的直接相减 —— 在拿到确凿证据前不擅自改默认值。三种读法的实测对比（各 600 场；流派数据为 18 点分配下的最优/中位胜率）：\n' +
+      '  subtract 直接相减：KO 率 0%，每场都拖到 20 回合读分。5/5/5 时 Punch 原始伤害 5、对手 ARM 6.5，相减后触发下限只剩 1 点，而血量有 203。耐力流 ARM 13 近乎免疫（中位胜率 60%），属性分配失衡。\n' +
+      '  percent 按 (1 − ARM/100) 折算：KO 率 100%。护甲不再惩罚小拳，命中成为唯一标准，力量流（ACC 低）崩到最优 28%。\n' +
+      '  capped 相减但不超过原始伤害的 50%：耐力流中位从 60% 降到 3%，力量流最优从 28% 回到 53% —— 三者中流派最均衡的一个。\n' +
+      '真实的一代 KO 与读分都常见、且力量/敏捷/耐力流都可用，所以正确公式很可能带某种上限。这是目前最值得优先查证的一项。',
+  ),
+
+  /** capped 读法下，护甲最多能吃掉原始伤害的多大比例 */
+  armorCapRatio: u(
+    0.5,
+    '若护甲带上限，上限是多少同样没有任何来源 —— 这一项完全是 capped 读法自带的推断。',
+    '取一半：既保留「护甲让小拳变钝」的质感，又不让高耐力选手完全免疫。仅在 armorMode 为 capped 时生效。',
   ),
 
   minDamage: u(
@@ -142,5 +150,6 @@ export const UNK = {
   knockdownLostPhases: UNKNOWNS.knockdownLostPhases.value,
   knockdownGetUpEnergy: UNKNOWNS.knockdownGetUpEnergy.value,
   armorMode: UNKNOWNS.armorMode.value,
+  armorCapRatio: UNKNOWNS.armorCapRatio.value,
   minDamage: UNKNOWNS.minDamage.value,
 };
